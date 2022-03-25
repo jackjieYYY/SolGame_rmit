@@ -12,8 +12,8 @@ public class BoltMover : MonoBehaviour
     void Start()
     {
         m_Rigidbody = GetComponent<Rigidbody>();
-        Debug.Log(" transform.position " + transform.position);
-        Debug.Log(" transform.roation " + transform.rotation);
+        //Debug.Log(" transform.position " + transform.position);
+        //Debug.Log(" transform.roation " + transform.rotation);
         //m_Rigidbody.velocity = new Vector3(transform.rotation.x, 0f, 0f) * speed;
         //var temp = new Vector3(transform.forward.x, transform.forward.y, transform.forward.z);
         m_Rigidbody.velocity = transform.forward * 2f;
@@ -22,7 +22,7 @@ public class BoltMover : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        Debug.Log(" transform.position " + transform.position);
+        //Debug.Log(" transform.position " + transform.position);
     }
 
     private void OnDestroy()

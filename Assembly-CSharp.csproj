@@ -56,6 +56,7 @@
     <Analyzer Include="C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\IDE\Extensions\Microsoft\Visual Studio Tools for Unity\Analyzers\Microsoft.Unity.Analyzers.dll" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\Models\BreakableAsteroids\Scripts\Fracture.cs" />
     <Compile Include="Assets\Script\PlayerController.cs" />
     <Compile Include="Assets\Script\CameraFollow.cs" />
     <Compile Include="Assets\Script\ShotSpawn.cs" />
@@ -63,8 +64,12 @@
     <Compile Include="Assets\Script\DestroyByBoundary.cs" />
     <Compile Include="Assets\Script\DestroyByBolt.cs" />
     <Compile Include="Assets\Models\BreakableAsteroids\Scripts\ExampleFracture.cs" />
-    <Compile Include="Assets\Models\BreakableAsteroids\Scripts\Fracture.cs" />
     <Compile Include="Assets\Script\test.cs" />
+    <Compile Include="Assets\Script\BoidSpawner.cs" />
+    <Compile Include="Assets\Script\Boid.cs" />
+    <Compile Include="Assets\Script\Astar\Node.cs" />
+    <Compile Include="Assets\Script\Astar\PathFinding.cs" />
+    <Compile Include="Assets\Script\Astar\worldGrid.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\DKP_PixelArt\PixelArtStarshipPackage_TerranFleet\PixelArtStarshipPackage_TerranFleet_Info.txt" />
