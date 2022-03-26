@@ -107,6 +107,19 @@ public class PathFinding : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        findPath(seeker.position,target.position);
+
+
+        //https://docs.unity3d.com/ScriptReference/Physics.RaycastAll.html
+        // Creat a ray to Find the closest point to seeker
+        var ray = new Ray(seeker.position, target.position - seeker.position);
+        var result = Physics.RaycastAll(ray, float.MaxValue);
+        foreach (RaycastHit rayCastHit in result)
+        {
+            if(rayCastHit.transform == target)
+            {
+                var HitPoint = rayCastHit.point;
+                findPath(seeker.position, HitPoint);
+            }
+        }
     }
 }
