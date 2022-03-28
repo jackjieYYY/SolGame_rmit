@@ -101,7 +101,7 @@ public class PlayerController : MonoBehaviour
         */
 
 
-        GetComponent<Rigidbody>().position = new Vector3(
+        m_Rigidbody.position = new Vector3(
             Mathf.Clamp(m_Rigidbody.position.x, boundary.xMin, boundary.xMax),
             0f,
             Mathf.Clamp(m_Rigidbody.position.z, boundary.zMin, boundary.zMax)

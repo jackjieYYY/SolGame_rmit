@@ -14,6 +14,8 @@ public class Node
     public int gridY;
     public Node Parent;
 
+    public int heapIndex;
+
 
     public Node(bool _walkable,Vector3 _worldPostion,int _gridX,int _gridY)
     {
@@ -28,4 +30,20 @@ public class Node
         get { return gCost+hCost; }
     }
 
+    public int HeapIndex
+    {
+        get { return heapIndex; }
+        set { heapIndex = value; }
+    }
+
+    public int CompareTo(Node other)
+    {
+        int compare  = fcost.CompareTo(other.fcost);
+        if (compare == 0)
+        {
+            compare = hCost.CompareTo(other.hCost);
+        }
+        return compare;
+
+    }
 }

@@ -6,6 +6,7 @@ public class worldGrid : MonoBehaviour
 {
     public Transform player;
 
+    public bool displayGridGizmos;
 
     public LayerMask unwalkableMask;
     public Vector2 gridWorldSize;
@@ -14,38 +15,19 @@ public class worldGrid : MonoBehaviour
     int gridSizeX, gridSizeY;
     Node[,] myGrid;
 
-
-    public List<Node> path;
+    public int MaxSize
+    {
+        get { return gridSizeX * gridSizeY; }
+    }
 
     void OnDrawGizmos()
     {
         Gizmos.DrawWireCube(transform.position, new Vector3(gridWorldSize.x, 1, gridWorldSize.y));
-        if (myGrid != null)
+        if (myGrid != null && displayGridGizmos)
         {
-            Node playerNode = NodeFromWorldPoint(player.position);
             foreach (Node n in myGrid)
             {
-                if (playerNode == n)
-                {
-                    Gizmos.color = Color.cyan;
-                }
-                else if (n.walkable)
-                {
-                    Gizmos.color = Color.white;
-
-                }
-                else if(!n.walkable)
-                {
-                    Gizmos.color = Color.red;
-                }
-                if(path != null)
-                {
-                    if (path.Exists(x=>x.gridX == n.gridX && x.gridY == n.gridY))
-                    {
-                        Gizmos.color = Color.yellow;
-                    }
-
-                }
+                Gizmos.color = (n.walkable) ? Color.white : Color.red;
                 Gizmos.DrawCube(n.worldPostion, Vector3.one * (nodeDiameter - 0.1f));
             }
         }
@@ -54,7 +36,7 @@ public class worldGrid : MonoBehaviour
 
 
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
         nodeDiameter = nodeRadius * 2;
         gridSizeX = Mathf.RoundToInt(gridWorldSize.x / nodeDiameter);
@@ -112,7 +94,7 @@ public class worldGrid : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
         CreateGrid();
     }
