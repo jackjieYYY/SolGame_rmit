@@ -5,6 +5,7 @@ using UnityEngine;
 public class PathFinding : MonoBehaviour
 {
 
+    private int NORMAL_DIAGONAL_COST = 14, NORMAL_STRAIGHT_COST = 10;
     public Transform seeker, target;
     worldGrid grid;
 
@@ -18,8 +19,7 @@ public class PathFinding : MonoBehaviour
 
         Node startNode = grid.NodeFromWorldPoint(startPos);
         Node targetNode = grid.NodeFromWorldPoint(targetPos);
-
-
+        Debug.DrawLine(startNode.worldPostion, targetNode.worldPostion, Color.red);
         List<Node> openSet = new List<Node>();
         HashSet<Node> closedSet = new HashSet<Node>();
         openSet.Add(startNode);
@@ -73,6 +73,7 @@ public class PathFinding : MonoBehaviour
 
     void RetracePath(Node startNode,Node endNode)
     {
+
         List<Node> path = new List<Node>();
         Node currentNode = endNode;
         while (currentNode != startNode)
@@ -82,8 +83,6 @@ public class PathFinding : MonoBehaviour
         }
         path.Reverse();
         grid.path = path;
-
-
     }
 
 
@@ -91,11 +90,7 @@ public class PathFinding : MonoBehaviour
     {
         int dstX = Mathf.Abs(nodeA.gridX - nodeB.gridX);
         int dstY = Mathf.Abs(nodeA.gridY - nodeB.gridY);
-        if (dstX > dstY)
-        {
-            return 14*dstY + 10 * (dstX - dstY);
-        }
-        return 14*dstX + 10 * (dstY - dstX);
+        return NORMAL_DIAGONAL_COST * Mathf.Min(dstX, dstY) + NORMAL_STRAIGHT_COST * Mathf.Abs(dstY - dstX);
     }
 
     // Start is called before the first frame update
@@ -107,6 +102,17 @@ public class PathFinding : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        findPath(seeker.position,target.position);
+        //https://docs.unity3d.com/ScriptReference/Physics.RaycastAll.html
+        // Creat a ray to Find the closest point to seeker
+        var ray = new Ray(seeker.position, target.position - seeker.position);
+        var result = Physics.RaycastAll(ray, float.MaxValue);
+        foreach (RaycastHit rayCastHit in result)
+        {
+            if(rayCastHit.transform == target)
+            {
+                var HitPoint = rayCastHit.point;
+                findPath(seeker.position, HitPoint);
+            }
+        }
     }
 }

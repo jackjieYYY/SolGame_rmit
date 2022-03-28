@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using UnityEditor;
 public class worldGrid : MonoBehaviour
 {
     public Transform player;
@@ -13,7 +13,7 @@ public class worldGrid : MonoBehaviour
     float nodeDiameter;
     int gridSizeX, gridSizeY;
     Node[,] myGrid;
-
+    [SerializeField] private bool YellowPathOnly = true;
 
     public List<Node> path;
 
@@ -22,7 +22,15 @@ public class worldGrid : MonoBehaviour
         Gizmos.DrawWireCube(transform.position, new Vector3(gridWorldSize.x, 1, gridWorldSize.y));
         if (myGrid != null)
         {
-            Node playerNode = NodeFromWorldPoint(player.position);
+            Node playerNode = null;
+            try
+            {
+                playerNode = NodeFromWorldPoint(player.position);
+            }
+            catch
+            {
+                //Debug.Log("Player die!");
+            }
             foreach (Node n in myGrid)
             {
                 if (playerNode == n)
@@ -44,15 +52,97 @@ public class worldGrid : MonoBehaviour
                     {
                         Gizmos.color = Color.yellow;
                     }
+                    // GetSmootherPath();
 
                 }
                 Gizmos.DrawCube(n.worldPostion, Vector3.one * (nodeDiameter - 0.1f));
             }
         }
-
     }
+    public List<Vector3> GetSmootherPath()
+    {
+        if (path != null)
+        {
+            //Make a Vec3 list with player vec3 in it
+            List<Vector3> pathInVec3 = new List<Vector3>();
+            Node playerNode = NodeFromWorldPoint(player.position);
+            pathInVec3.Add(playerNode.worldPostion);
+            foreach (Node n in path)
+            {
+                pathInVec3.Add(n.worldPostion);
+            }
 
+            //Draw debug lines for pathfinding before smoothing
+            for(int i = 0; i < pathInVec3.Count-1; i++)
+            {
+                Debug.DrawLine(pathInVec3[i], pathInVec3[i+1]);
+            }
 
+            //Path smoothing
+            //Create a new list for smoother path
+            List<Vector3> pathSmoothing = new List<Vector3>();
+            pathSmoothing.Add(pathInVec3[0]);
+            
+            //------
+            int currIdx = 0;
+            for(int i = 0; i < pathInVec3.Count-1; i++)
+            {
+                if(i == currIdx)
+                {
+                    for(int j = i + 1; j < pathInVec3.Count; j++)
+                    {
+                        if(YellowPathOnly)
+                        {
+                            Vector3 direction = (pathInVec3[j] - pathInVec3[i]).normalized * (pathInVec3[j] - pathInVec3[i]).magnitude;
+                            bool hit = Physics.Raycast(pathInVec3[i], direction, (pathInVec3[j] - pathInVec3[i]).magnitude, unwalkableMask);
+                            if(hit)
+                            {                     
+                                pathSmoothing.Add(pathInVec3[j-1]);
+                                currIdx = j -1;
+                                break;                                      
+                            }
+                            else
+                            {
+                                for(float k = 0; k < (pathInVec3[j] - pathInVec3[i]).magnitude; k += 0.01f)
+                                {
+                                    Vector3 P = Vector3.Lerp(pathInVec3[i], pathInVec3[j], k);
+                                    Vector3 n = new Vector3(Mathf.Round(P.x), P.y, Mathf.Round(P.z));
+                                    if(Physics.CheckSphere(n, nodeRadius,unwalkableMask))
+                                    {
+                                        pathSmoothing.Add(pathInVec3[j-1]);
+                                        currIdx = j -1;
+                                        break;
+                                    }
+                                }
+                            }                            
+                        }
+                        else
+                        {
+                            Vector3 direction = (pathInVec3[j] - pathInVec3[i]).normalized * (pathInVec3[j] - pathInVec3[i]).magnitude;
+                            RaycastHit rayHit;
+                            bool hit = Physics.SphereCast(pathInVec3[i], nodeRadius, direction, out rayHit, (pathInVec3[j] - pathInVec3[i]).magnitude, unwalkableMask);
+                            if(hit)
+                            {                     
+                                pathSmoothing.Add(pathInVec3[j-1]);
+                                currIdx = j -1;
+                                break;                                      
+                            }
+                        }
+                    }
+                }
+            }  
+            pathSmoothing.Add(pathInVec3[pathInVec3.Count-1]);
+            //------
+            //Draw debug lines for path after smoothing
+            for(int i = 0; i < pathSmoothing.Count-1; i++)
+            {
+                Debug.DrawLine(pathSmoothing[i], pathSmoothing[i+1], Color.cyan);
+            }
+            return pathSmoothing;
+        }
+        return null;
+    }
+    
     // Start is called before the first frame update
     void Start()
     {
