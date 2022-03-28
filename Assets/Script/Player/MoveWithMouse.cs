@@ -41,7 +41,7 @@ public class MoveWithMouse : MonoBehaviour
             TryGetPath(worldPos);
         }
 
-        FollowPath();// this is  original method.
+        //FollowPath();// this is  original method.
         FollowPath();// this is new one with AddForce. But need to Fix.
     }
 
