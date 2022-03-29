@@ -4,7 +4,8 @@ using UnityEngine;
 
 public enum StateType
 {
-    Enter,      //  player stared the game
-    Chase,      //  player shot
-    Die,        //  Death Hunter or predator or Flock or player
+    Enter,           //     enter the scene
+    SpawnAnimation, //      display Star Animation
+    Chase,          //  
+    Die,            //      Death Hunter or predator or Flock or player
 }

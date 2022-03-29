@@ -8,21 +8,41 @@ using UnityEngine;
 public class DieState : IState
 {
     FSM m_Fsm;
-    public DieState(FSM fsm)
+    GameObject gameObject;
+    GameObject deathExplosion;
+    GameObject dieAnimationObject;
+
+    float dieAnimationTime;
+    float dieAnimationDestoryTime = 2f;
+
+
+    public DieState(FSM fsm, GameObject _gameObject, GameObject _deathExplosion)
     {
-        m_Fsm = fsm;
+        m_Fsm = fsm; 
+        gameObject = _gameObject;
+        deathExplosion = _deathExplosion;
+        
+
     }
     public void OnEnter()   //  The method that should be performed to enter this state
     {
-        Debug.Log("I am DieState. OnEnter()");
+        dieAnimationTime = Time.time;
+        //Spawn in the broken version
+        dieAnimationObject = MonoSub.Instantiate(deathExplosion, gameObject.transform.position, gameObject.transform.rotation);
     }
     public void OnUpdate() //The method that should be executed to maintain this state
     {
-        Debug.Log("I am DieState. OnUpdate()");
+        MonoSub.Destroy(gameObject);
+        MonoSub.Destroy(dieAnimationObject,2f);
+        GameObject.Find("GameController").GetComponent<GameController>().RaceBDroid_Destory(this.gameObject);
     }
     public void OnExit() //The method that should be executed to exit this state
     {
-        Debug.Log("I am DieState. OnExit()");
+
+    }
+    private class MonoSub : MonoBehaviour
+    {
+
     }
 }
 

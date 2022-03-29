@@ -9,6 +9,7 @@ public class RaceBDestoryBybolt : MonoBehaviour
     int BoltMaxCount = 2;
     int BoltCount = 0;
 
+
     void OnTriggerEnter(Collider other)
     {
         Destroy(other.gameObject);
@@ -18,7 +19,7 @@ public class RaceBDestoryBybolt : MonoBehaviour
             var temp = Instantiate(Explosion, transform.position, transform.rotation); //Spawn in the broken version
             Destroy(temp, 2f);
             Destroy(gameObject);
-
+            GameObject.Find("GameController").GetComponent<GameController>().RaceBDroid_Destory(this.gameObject);
         }
     }
 
@@ -33,4 +34,9 @@ public class RaceBDestoryBybolt : MonoBehaviour
     {
         
     }
+    private class MonoStub : MonoBehaviour
+    {
+
+    }
+
 }

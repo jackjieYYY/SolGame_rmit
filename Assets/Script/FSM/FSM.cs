@@ -24,10 +24,11 @@ public class FSM
         stateDic.Add(stateType, stateBase);
     }
 
-    public void onTick()
+    public void OnUpdate()
     {
         currentStateBase.OnUpdate();
     }
+
 
     public virtual void TransitionState(StateType type)
     {

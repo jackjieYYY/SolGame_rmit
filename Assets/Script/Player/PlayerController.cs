@@ -20,7 +20,6 @@ public class PlayerController : MonoBehaviour
     {
         //Fetch the Rigidbody component you attach from your GameObject
         m_Rigidbody = GetComponent<Rigidbody>();
-
     }
 
 
