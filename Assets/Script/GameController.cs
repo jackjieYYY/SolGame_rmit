@@ -8,7 +8,7 @@ public class GameController : MonoBehaviour
     List<GameObject> RaceBDroidList = new List<GameObject> ();
     public Vector3 spawnValue;
     int maxSpawnWaitTime = 10;
-    int maxRaceBDroid = 3;
+    int maxRaceBDroid = 0;
     // Start is called before the first frame update
     void Start()
     {
