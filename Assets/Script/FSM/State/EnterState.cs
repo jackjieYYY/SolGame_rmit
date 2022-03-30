@@ -11,11 +11,21 @@ public class EnterState : IState
     private Transform m_transform;
     GameObject m_gameObject;
     public GameObject spawnExplosion;
+    private GameController gameController;
+
+
     public EnterState(FSM fsm, GameObject _gameObject)
     {
         m_FSM = fsm;
         m_gameObject = _gameObject;
         m_transform = m_gameObject.transform;
+
+        var _gameController = GameObject.Find("GameController");
+        if (_gameController != null)
+        {
+            gameController = _gameController.GetComponent<GameController>();
+        }
+
     }
     public EnterState()
     {
@@ -24,12 +34,12 @@ public class EnterState : IState
 
     public void OnEnter()   //  The method that should be performed to enter this state
     {
-        Debug.Log("I am EnterState. OnEnter()");
+
     }
     public void OnUpdate() //The method that should be executed to maintain this state
     {
         
-        m_transform.position = Vector3.MoveTowards(m_transform.position, new Vector3(m_transform.position.x,0, m_transform.position.z), 0.01f);
+        m_transform.position = Vector3.MoveTowards(m_transform.position, new Vector3(m_transform.position.x,0, m_transform.position.z), 0.05f);
         m_transform.localScale = Vector3.MoveTowards(m_transform.localScale, new Vector3(0.2f,0.2f,0.2f),0.01f);
 
         if (m_transform.position.y == 0 && m_transform.localScale.x == 0.2f)

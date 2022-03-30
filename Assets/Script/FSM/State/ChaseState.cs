@@ -8,6 +8,7 @@ using UnityEngine;
 
 public class ChaseState : IState
 {
+    private GameController gameController;
     GameObject player;
     GameObject m_GameObject;
     FSM m_FSM;
@@ -22,7 +23,13 @@ public class ChaseState : IState
         player = GameObject.Find("Player");
         m_GameObject = _gameObject;
         m_FSM = fsm;
+        var _gameController = GameObject.Find("GameController");
+        if (_gameController != null)
+        {
+            gameController = _gameController.GetComponent<GameController>();
+        }
     }
+
 
 
     public void OnEnter()   //  The method that should be performed to enter this state
@@ -42,6 +49,7 @@ public class ChaseState : IState
     {
         if(path != null)
         {
+            speed = gameController.getDroidSpeed();
             FollowPath();
         }
     }
