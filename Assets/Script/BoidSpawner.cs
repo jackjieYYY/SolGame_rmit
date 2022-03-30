@@ -11,6 +11,7 @@ public class BoidSpawner : MonoBehaviour
     //配置参数，调整Boid对象的行为
     public int numBoids = 100;                  //boid 的个数
     public GameObject boidPrefab;               //boid 在unity中的预制体
+    public GameObject master;
     public float spawnRadius = 100f;            //实例化 boid 的位置范围
     public float spawnVelcoty = 1f;            //boid 的速度
     public float minVelocity = 0f;
