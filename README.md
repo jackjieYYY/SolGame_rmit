@@ -1,3 +1,24 @@
+# RMIT Games and AI SolGame
+
+## Branching Strategy
+
+To add a feature, please take a branch from `main`, please title it `feature/your_feat_name`
+
+When done please make a PR back to `main`
+
+If you can please try to use gitflow for your commit messages e.g.
+- `feat`: (new feature for the user, not a new feature for build script)
+- `fix`: (bug fix for the user, not a fix to a build script)
+- `docs`: (changes to the documentation)
+- `style`: (formatting, missing semi colons, etc; no production code change)
+- `refactor`: (refactoring production code, eg. renaming a variable)
+- `test`: (adding missing tests, refactoring tests; no production code change)
+- `chore`: (updating grunt tasks etc; no production code change)
+
+
+
+# Game Behaviour:
+
 ## steering behaviours [boids]
 
 follow-the-leader

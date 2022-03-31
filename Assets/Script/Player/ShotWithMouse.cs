@@ -37,7 +37,6 @@ public class ShotWithMouse : MonoBehaviour
         if (Input.GetButton("Fire1") && Time.time > nextFile)
         {
             nextFile = Time.time + fileRate;
-            Debug.Log("father shotSpawn.transform.position " + shotSpawn.transform.position);
             GameObject temp = Instantiate(shot, shotSpawn.transform.position, Quaternion.Euler(0f, mouseAngle, transform.rotation.z));
             Destroy(temp, 10f);
         }
