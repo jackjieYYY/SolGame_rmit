@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BoltMover : MonoBehaviour
+public class SwirlMover : MonoBehaviour
 {
     public GameObject hited;
     public float speed;
@@ -16,7 +16,7 @@ public class BoltMover : MonoBehaviour
         //Debug.Log(" transform.roation " + transform.rotation);
         //m_Rigidbody.velocity = new Vector3(transform.rotation.x, 0f, 0f) * speed;
         //var temp = new Vector3(transform.forward.x, transform.forward.y, transform.forward.z);
-        m_Rigidbody.velocity = transform.forward * 2f;
+        m_Rigidbody.velocity = transform.forward * speed;
     }
 
     // Update is called once per frame
