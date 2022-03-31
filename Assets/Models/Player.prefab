@@ -196,8 +196,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d6b016705e1fdce4aa7c014f7cc942f5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  acceleration: 0.001
-  tilt: 5
   fileRate: 0.5
   shot: {fileID: 2611988723968014834, guid: 322f29f7fcbfd034495caeb769a12135, type: 3}
   shotSpawn: {fileID: 6017853717024972512}
@@ -206,6 +204,8 @@ MonoBehaviour:
     xMax: 8
     zMin: -9
     zMax: 9
+  InvincibilityTimer: 2
+  Maximumhealth: 0
 --- !u!64 &1966387059
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -227,7 +227,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6017853717636381541}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 752ded5b99f617947a4d2106a4d72c4f, type: 3}
   m_Name: 
@@ -243,10 +243,10 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6017853717636381541}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 39c7efe2b7838a1469f028ff1d276cb5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  shot: {fileID: 2611988723968014834, guid: 322f29f7fcbfd034495caeb769a12135, type: 3}
+  shot: {fileID: 2611988723968014834, guid: caa65448b7b3d3142a5cfde03fa63764, type: 3}
   shotSpawn: {fileID: 6017853717024972512}
