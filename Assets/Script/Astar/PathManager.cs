@@ -38,7 +38,16 @@ namespace Assets.Script.Astar
                 isProcessingPath = true;
                 var result = pathFinding.findPath(currentPathRequest.start, currentPathRequest.end);
                 isProcessingPath = false;
-                currentPathRequest.callBack(result,true);
+                currentPathRequest.callBack(result, result==null?false:true);
+                if (result == null)
+                {
+                    currentPathRequest.callBack(null, false);
+                }
+                else
+                {
+                    currentPathRequest.callBack(result, true);
+                }
+                
                 instance.tryProcesNext();
             }
         }

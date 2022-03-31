@@ -35,21 +35,19 @@ public class GameController : MonoBehaviour
     void Start()
     {
         // open a new Thread
-        StartCoroutine(spawnRaceBDroid());
+        StartCoroutine(spawnDroid());
     }
 
     /// <summary>
     /// IEnumerator and startCoroutine just like a Thread.
     /// </summary>
     /// <returns></returns>
-    IEnumerator spawnRaceBDroid()
+    IEnumerator spawnDroid()
     {
 
         while (true)
         {
-
             // raceA spawn
-
             if (RaceADroidList.Count < maxDroid * 3)
             {
                 for (int i = 0; i < maxDroid; i++)
@@ -59,16 +57,12 @@ public class GameController : MonoBehaviour
                     RaceADroidList.Add(raceA.gameObject);
                 }
             }
-
             // raceB spawn
             if (RaceBDroidList.Count < maxDroid)
             {
-                for (int i = 0; i < maxDroid/2; i++)
-                {
-                    Vector3 spawnPosition = new Vector3(Random.Range(6, 9), 4, Random.Range(-3, -5));
-                    var raceB = Instantiate(RaceBDroid, spawnPosition, Quaternion.identity);
-                    RaceBDroidList.Add(raceB.gameObject);
-                }
+                Vector3 spawnPosition = new Vector3(Random.Range(6, 9), 4, Random.Range(-3, -5));
+                var raceB = Instantiate(RaceBDroid, spawnPosition, Quaternion.identity);
+                RaceBDroidList.Add(raceB.gameObject);
 
             }
             yield return new WaitForSeconds(Random.Range(2, maxSpawnWaitTime));
@@ -77,7 +71,10 @@ public class GameController : MonoBehaviour
 
     }
 
-
+    public void RaceADroid_Destory(GameObject RaceADroid)
+    {
+        RaceADroidList.Remove(RaceADroid);
+    }
     public void RaceBDroid_Destory(GameObject RaceBDroid)
     {
         RaceBDroidList.Remove(RaceBDroid);
@@ -124,7 +121,7 @@ public class GameController : MonoBehaviour
         {
             level++;
             maxDroid++;
-            DroidSpeed = DroidSpeed * 2;
+            DroidSpeed = DroidSpeed;
         }
     }
 

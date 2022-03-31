@@ -92,7 +92,7 @@ GameObject:
   - component: {fileID: 1046124869085635127}
   - component: {fileID: 1046124869085509821}
   - component: {fileID: 1046124869085509810}
-  - component: {fileID: 151728040}
+  - component: {fileID: -2681868518414706905}
   m_Layer: 0
   m_Name: RaceB_Droid
   m_TagString: Untagged
@@ -144,7 +144,7 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 2.77, y: 3.13, z: -5.02}
   m_Center: {x: 0, y: 0, z: 1.12}
---- !u!114 &151728040
+--- !u!114 &-2681868518414706905
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -158,3 +158,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   deathExplosion: {fileID: 6192724089161036641, guid: e17d9a3f04750764c8c0a7a0461e4c3b, type: 3}
   spawnAnimation: {fileID: 1500378020736912, guid: 2547a66872ebe45408ace228820a79e1, type: 3}
+  HP: 2
