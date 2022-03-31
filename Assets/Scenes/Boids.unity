@@ -174,6 +174,18 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6017853717636381537, guid: a4958fc22629f8745adc772d23ff6cf8, type: 3}
+      propertyPath: weaponType1
+      value: 
+      objectReference: {fileID: 2611988723968014834, guid: caa65448b7b3d3142a5cfde03fa63764, type: 3}
+    - target: {fileID: 6017853717636381537, guid: a4958fc22629f8745adc772d23ff6cf8, type: 3}
+      propertyPath: weaponType2
+      value: 
+      objectReference: {fileID: 2611988723968014834, guid: 322f29f7fcbfd034495caeb769a12135, type: 3}
+    - target: {fileID: 6017853717636381537, guid: a4958fc22629f8745adc772d23ff6cf8, type: 3}
+      propertyPath: weaponType3
+      value: 
+      objectReference: {fileID: 2611988723968014834, guid: fbc1a1880d5f2384caf1a64879bd843c, type: 3}
     - target: {fileID: 6017853717636381541, guid: a4958fc22629f8745adc772d23ff6cf8, type: 3}
       propertyPath: m_Name
       value: Player
