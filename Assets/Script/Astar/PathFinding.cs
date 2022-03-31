@@ -12,7 +12,6 @@ public class PathFinding : MonoBehaviour
 {
     PathManager pathManager;
     worldGrid grid;
-    [SerializeField] private bool YellowPathOnly = true;
     private int NORMAL_STRAIGHT_COST = 10, NORMAL_DIAGONAl_COST = 14, OBSTACLE_STRAIGHT_COST = 20,  OBSTACLE_DIAGONAL_COST = 28;
     public LayerMask unwalkableMask;
     private void Awake()
@@ -142,43 +141,68 @@ public class PathFinding : MonoBehaviour
                 {
                     for (int j = i + 1; j < pathInVec3.Count; j++)
                     {
-                        if (YellowPathOnly)
+
+                        // Vector3 direction = (pathInVec3[j] - pathInVec3[i]).normalized * (pathInVec3[j] - pathInVec3[i]).magnitude;
+                        // bool hit = Physics.Raycast(pathInVec3[i], direction, (pathInVec3[j] - pathInVec3[i]).magnitude, unwalkableMask);
+                        // if (hit)
+                        // {
+                        //     pathSmoothing.Add(pathInVec3[j - 1]);
+                        //     currIdx = j - 1;
+                        //     break;
+                        // }
+                        // else
+                        // {
+                        //     for (float k = 0; k < (pathInVec3[j] - pathInVec3[i]).magnitude; k += 0.01f)
+                        //     {
+                        //         Vector3 P = Vector3.Lerp(pathInVec3[i], pathInVec3[j], k);
+                        //         Vector3 n = new Vector3(Mathf.Round(P.x), P.y, Mathf.Round(P.z));
+                        //         if (Physics.CheckSphere(n, grid.nodeRadius * 3f , unwalkableMask))
+                        //         {
+                        //             pathSmoothing.Add(pathInVec3[j - 1]);
+                        //             currIdx = j - 1;
+                        //             break;  
+                        //         }
+                        //     }
+                        // }
+
+                        //Improved version of pathfinding with different node cost. This only works with node nears obstacle has higher cost, other wise the smoothed path
+                        //will not very different from the re-smoothed path.
+
+                        Vector3 direction = (pathInVec3[j] - pathInVec3[i]).normalized * (pathInVec3[j] - pathInVec3[i]).magnitude;
+                        bool hit = Physics.Raycast(pathInVec3[i], direction, (pathInVec3[j] - pathInVec3[i]).magnitude, unwalkableMask);
+                        if (hit)
                         {
-                            Vector3 direction = (pathInVec3[j] - pathInVec3[i]).normalized * (pathInVec3[j] - pathInVec3[i]).magnitude;
-                            bool hit = Physics.Raycast(pathInVec3[i], direction, (pathInVec3[j] - pathInVec3[i]).magnitude, unwalkableMask);
-                            if (hit)
-                            {
-                                pathSmoothing.Add(pathInVec3[j - 1]);
-                                currIdx = j - 1;
-                                break;
-                            }
-                            else
-                            {
-                                for (float k = 0; k < (pathInVec3[j] - pathInVec3[i]).magnitude; k += 0.01f)
-                                {
-                                    Vector3 P = Vector3.Lerp(pathInVec3[i], pathInVec3[j], k);
-                                    Vector3 n = new Vector3(Mathf.Round(P.x), P.y, Mathf.Round(P.z));
-                                    if (Physics.CheckSphere(n, grid.nodeRadius , unwalkableMask))
-                                    {
-                                        pathSmoothing.Add(pathInVec3[j - 1]);
-                                        currIdx = j - 1;
-                                        break;  
-                                    }
-                                }
-                            }
+                            pathSmoothing.Add(pathInVec3[j - 1]);
+                            currIdx = j - 1;
+                            break;
                         }
                         else
                         {
-                            Vector3 direction = (pathInVec3[j] - pathInVec3[i]).normalized * 10000f;
-                            RaycastHit rayHit;
-                            bool hit = Physics.SphereCast(pathInVec3[i], grid.nodeRadius , direction, out rayHit, (pathInVec3[j] - pathInVec3[i]).magnitude, unwalkableMask);
-                            if (hit)
+                            for (float k = 0; k < (pathInVec3[j] - pathInVec3[i]).magnitude; k += 0.01f)
                             {
-                                pathSmoothing.Add(pathInVec3[j - 1]);
-                                currIdx = j - 1;
-                                break;
+                                Vector3 P = Vector3.Lerp(pathInVec3[i], pathInVec3[j], k);
+                                Vector3 n = new Vector3(Mathf.Round(P.x), P.y, Mathf.Round(P.z));
+                                List<Node> nodeList = grid.GetNeighbours(grid.NodeFromWorldPoint(n));
+                                bool existed = false;
+                                foreach(Node node in nodeList)
+                                {
+                                    if(!node.walkable)
+                                    {
+                                        existed = true;
+                                        break;
+                                    }
+                                }
+                                if(existed)
+                                {
+                                    pathSmoothing.Add(pathInVec3[j - 1]);
+                                    currIdx = j - 1;
+                                    break;
+                                }
                             }
                         }
+                            
+                            
+                        
                     }
                 }
             }

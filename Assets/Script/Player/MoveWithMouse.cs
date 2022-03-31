@@ -15,8 +15,8 @@ public class MoveWithMouse : MonoBehaviour
     float nextFire;
     float fireRate = 0.5f;
 
-    [SerializeField] private float maxForce =  15f, maxSpeed = 15f, slowingRadius = 0.5f, drag = 4f;
-    [SerializeField] private float pathRadius = 0.00001f, futureAhead = 0.5f;
+    [SerializeField] private float maxForce =  20f, maxSpeed = 20f, slowingRadius = 0.5f, drag = 4f;
+    [SerializeField] private float pathRadius = 0.001f, futureAhead = 0.25f;
     private int currentPath = 0;
     // Start is called before the first frame update
     void Start()
@@ -131,48 +131,41 @@ public class MoveWithMouse : MonoBehaviour
 
         if (pathList != null && pathList.Count != 0)
         {
-            Vector3 futurePosition = m_Rigidbody.position + (m_Rigidbody.velocity.normalized * futureAhead);
-
-            Vector3 start = pathList[currentPath];
-            Vector3 end = pathList[currentPath+1];
-            Vector3 projectedVector = FindTarget(start, end, futurePosition);
+            float worldRecord = 10000000000f;
             Vector3 target = Vector3.zero;
-            Vector3 futureProjected = projectedVector + ((end - start).normalized * futureAhead);
-
-            float distance = Vector3.Distance(futurePosition, projectedVector);
-
-            if (distance > pathRadius) 
+            Vector3 futurePosition = m_Rigidbody.position + (m_Rigidbody.velocity.normalized * futureAhead);
+            for(int i = 0; i < pathList.Count-1;i++)
             {
-                target = futureProjected;
-            }
-            else 
-            {
-                target = futurePosition;
-            }
-            if (Vector2.Distance(start, projectedVector) > Vector2.Distance(start, end))
-            {
-                if (currentPath + 2 < pathList.Count) 
+                Vector3 start = pathList[i];
+                Vector3 end = pathList[i+1];
+                Vector3 normalPoint = FindTarget(start, end, futurePosition);
+                if (normalPoint.z < Mathf.Min(start.z, end.z) || normalPoint.z > Mathf.Max(start.z, end.z)) 
                 {
-                    currentPath++;
-
+                    normalPoint.z = end.z;
                 }
-                else
+                if (normalPoint.x < Mathf.Min(start.x, end.x) || normalPoint.x > Mathf.Max(start.x, end.x)) 
                 {
-                    target = pathList[pathList.Count-1];
-
+                    normalPoint.x = end.x;
                 }
 
-            }
-            else
-            {
-                if (!PointIsOnPath(start, end, projectedVector))
+                float distance = Vector3.Distance(futurePosition, normalPoint);
+                
+                if (distance < worldRecord) 
                 {
-                    target = pathList[currentPath];
+                    worldRecord = distance;
+                    Vector3 dir = (end - start).normalized * futureAhead;
+                    target = normalPoint + dir;
                 }
+
             }
-            Debug.DrawLine(m_Rigidbody.position, target, Color.red);
-            GetComponent<MeshRenderer>().transform.rotation = Quaternion.Slerp(GetComponent<MeshRenderer>().transform.rotation,  Quaternion.Euler(target), 0.1f);
-            m_Rigidbody.AddForce(Seek(target, m_Rigidbody.position, m_Rigidbody.velocity, maxSpeed, maxForce));
+            if(worldRecord > pathRadius)
+            {
+                Debug.DrawLine(m_Rigidbody.position, target, Color.red);
+                GetComponent<MeshRenderer>().transform.rotation = Quaternion.Slerp(GetComponent<MeshRenderer>().transform.rotation,  Quaternion.Euler(target), 0.1f);
+                m_Rigidbody.AddForce(Arrive(target, m_Rigidbody.position, m_Rigidbody.velocity, maxSpeed, maxForce, slowingRadius));  
+                // m_Rigidbody.AddForce(Seek(target, m_Rigidbody.position, m_Rigidbody.velocity, maxSpeed, maxForce));     
+            }
+            
         }
     }
 
@@ -181,7 +174,9 @@ public class MoveWithMouse : MonoBehaviour
     {
         Vector3 startToFuturePos = futurePostion - start;
         Vector3 pathDir = (end - start).normalized;
-        float dotProducts = Vector2.Dot(new Vector2(startToFuturePos.x, startToFuturePos.z), new Vector2(pathDir.x, pathDir.z));
+        startToFuturePos.y = 0f;
+        pathDir.y = 0f;
+        float dotProducts = Vector3.Dot(startToFuturePos, pathDir);
         pathDir *= dotProducts;
         pathDir += start;
         return pathDir;
