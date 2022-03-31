@@ -13,6 +13,7 @@ public class EnterState : IState
     public GameObject spawnExplosion;
     private GameController gameController;
 
+    Vector3 localScale;
 
     public EnterState(FSM fsm, GameObject _gameObject)
     {
@@ -32,6 +33,11 @@ public class EnterState : IState
 
     }
 
+    public void setLocalScale(Vector3 _vector3)
+    {
+        localScale = _vector3;
+    }
+
     public void OnEnter()   //  The method that should be performed to enter this state
     {
 
@@ -40,9 +46,9 @@ public class EnterState : IState
     {
         
         m_transform.position = Vector3.MoveTowards(m_transform.position, new Vector3(m_transform.position.x,0, m_transform.position.z), 0.05f);
-        m_transform.localScale = Vector3.MoveTowards(m_transform.localScale, new Vector3(0.2f,0.2f,0.2f),0.01f);
+        m_transform.localScale = Vector3.MoveTowards(m_transform.localScale, localScale, 0.01f);
 
-        if (m_transform.position.y == 0 && m_transform.localScale.x == 0.2f)
+        if (m_transform.position.y == 0 && m_transform.localScale == localScale)
         {
             m_FSM.TransitionState(StateType.SpawnAnimation);
 

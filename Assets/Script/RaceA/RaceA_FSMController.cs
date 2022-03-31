@@ -21,7 +21,11 @@ public class RaceA_FSMController : MonoBehaviour
         m_Fsm = new FSM();
         randomRotator = new RandomRotator(gameObject.GetComponent<Rigidbody>());
         randomRotator.setRotation(new Vector3(1, 1, 1), 1f);
-        m_Fsm.AddState(StateType.Enter, new EnterState(m_Fsm,gameObject));
+
+        var enterState = new EnterState(m_Fsm, gameObject);
+        enterState.setLocalScale(new Vector3(0.2f, 0.2f, 0.2f));
+        m_Fsm.AddState(StateType.Enter,enterState);
+
         m_Fsm.AddState(StateType.SpawnAnimation, new SpawnAnimationState(m_Fsm, gameObject, spawnAnimation));
         m_Fsm.AddState(StateType.Chase,new ChaseState(m_Fsm,gameObject));
         m_Fsm.AddState(StateType.Die, new DieState(m_Fsm,gameObject,deathExplosion));
@@ -52,7 +56,7 @@ public class RaceA_FSMController : MonoBehaviour
     {
         Destroy(other.gameObject);
         hitByBoltCount++;
-        if (this.hitByBoltCount > this.HP)
+        if (this.hitByBoltCount >= this.HP)
         {
             gameController.addScore(score);
             m_Fsm.TransitionState(StateType.Die);

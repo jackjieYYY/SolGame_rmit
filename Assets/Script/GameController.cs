@@ -14,7 +14,7 @@ public class GameController : MonoBehaviour
 
     int level = 1;
     public Vector3 spawnValue;
-    int maxSpawnWaitTime = 10;
+    int maxSpawnWaitTime = 5;
 
     // Start is called before the first frame update
 
@@ -49,6 +49,7 @@ public class GameController : MonoBehaviour
         {
 
             // raceA spawn
+
             if (RaceADroidList.Count < maxDroid * 3)
             {
                 for (int i = 0; i < maxDroid; i++)
@@ -62,11 +63,15 @@ public class GameController : MonoBehaviour
             // raceB spawn
             if (RaceBDroidList.Count < maxDroid)
             {
-                Vector3 spawnPosition = new Vector3(Random.Range(6, 9), 4, Random.Range(-3, -5));
-                var raceB = Instantiate(RaceBDroid, spawnPosition, Quaternion.identity);
-                RaceBDroidList.Add(raceB.gameObject);
+                for (int i = 0; i < maxDroid/2; i++)
+                {
+                    Vector3 spawnPosition = new Vector3(Random.Range(6, 9), 4, Random.Range(-3, -5));
+                    var raceB = Instantiate(RaceBDroid, spawnPosition, Quaternion.identity);
+                    RaceBDroidList.Add(raceB.gameObject);
+                }
+
             }
-            yield return new WaitForSeconds(Random.Range(5, maxSpawnWaitTime));
+            yield return new WaitForSeconds(Random.Range(2, maxSpawnWaitTime));
         }
 
 

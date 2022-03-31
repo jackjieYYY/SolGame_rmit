@@ -12,11 +12,10 @@ public class ChaseState : IState
     GameObject player;
     GameObject m_GameObject;
     FSM m_FSM;
-
-
     List<Vector3> path;
     float speed = 0.01f;
-
+    private float nextFindPathTime;
+    private float FindPathTimeRate = 1f;
 
     public ChaseState(FSM fsm,GameObject _gameObject)
     {
@@ -34,20 +33,27 @@ public class ChaseState : IState
 
     public void OnEnter()   //  The method that should be performed to enter this state
     {
-        try
-        {
-            TryGetPath(player.GetComponent<Transform>().position);
-        }
-        catch (Exception)
-        {
 
-            Debug.Log("Error on Paht Finder");
-        }
         
     }
     public void OnUpdate() //The method that should be executed to maintain this state
     {
-        if(path != null)
+
+        if (Time.time > nextFindPathTime)
+        {
+            nextFindPathTime = Time.time + FindPathTimeRate;
+            try
+            {
+                TryGetPath(player.GetComponent<Transform>().position);
+            }
+            catch (Exception)
+            {
+                Debug.Log("Error on Paht Finder");
+            }
+        }
+
+
+        if (path != null)
         {
             speed = gameController.getDroidSpeed();
             FollowPath();

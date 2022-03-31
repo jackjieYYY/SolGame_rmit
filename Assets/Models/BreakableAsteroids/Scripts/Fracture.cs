@@ -7,6 +7,13 @@ public class Fracture : MonoBehaviour
     [Tooltip("\"Fractured\" is the object that this will break into")]
     public GameObject fractured;
 
+    public void Start()
+    {
+        FractureObject();
+    }
+
+
+
     public void FractureObject()
     {
         Instantiate(fractured, transform.position, transform.rotation); //Spawn in the broken version
