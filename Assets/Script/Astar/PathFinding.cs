@@ -13,11 +13,13 @@ public class PathFinding : MonoBehaviour
     PathManager pathManager;
     worldGrid grid;
     [SerializeField] private bool YellowPathOnly = true;
+    private int NORMAL_STRAIGHT_COST = 10, NORMAL_DIAGONAl_COST = 14, OBSTACLE_STRAIGHT_COST = 20,  OBSTACLE_DIAGONAL_COST = 28;
     public LayerMask unwalkableMask;
     private void Awake()
     {
         pathManager = GetComponent<PathManager>();
         grid = GetComponent<worldGrid>();
+        unwalkableMask = LayerMask.GetMask("unwalkable");
     }
 
     public List<Vector3> findPath(Vector3 startPos, Vector3 targetPos, bool smootherPath)
@@ -197,11 +199,35 @@ public class PathFinding : MonoBehaviour
     {
         int dstX = Mathf.Abs(nodeA.gridX - nodeB.gridX);
         int dstY = Mathf.Abs(nodeA.gridY - nodeB.gridY);
-        if (dstX > dstY)
+        bool unwalkableNear = false;
+        foreach(Node n in grid.GetNeighbours(nodeA))
         {
-            return 14*dstY + 10 * (dstX - dstY);
+            if(!n.walkable)
+            {
+                unwalkableNear = true;
+                break;
+            }
         }
-        return 14*dstX + 10 * (dstY - dstX);
+        if(!unwalkableNear)
+        {
+            foreach(Node n in grid.GetNeighbours(nodeB))
+            {
+                if(!n.walkable)
+                {
+                    unwalkableNear = true;
+                    break;
+                }
+            }
+        }
+        if(unwalkableNear)
+        {
+            return OBSTACLE_DIAGONAL_COST * Mathf.Min(dstX, dstY) + OBSTACLE_STRAIGHT_COST * Mathf.Abs(dstX - dstY);
+        }
+        else
+        {
+            return NORMAL_DIAGONAl_COST * Mathf.Min(dstX, dstY) + NORMAL_STRAIGHT_COST * Mathf.Abs(dstX - dstY);
+        }
+
     }
 
     // Start is called before the first frame update

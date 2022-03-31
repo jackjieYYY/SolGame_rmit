@@ -16,8 +16,8 @@ public class MoveWithMouse : MonoBehaviour
     float fireRate = 0.5f;
 
     [SerializeField] private float maxForce =  15f, maxSpeed = 15f, slowingRadius = 0.5f, drag = 4f;
-    [SerializeField] private float pathRadius = 0.00001f, futureAhead = 0.1f;
-    Vector3 steeringForce = Vector3.zero;
+    [SerializeField] private float pathRadius = 0.00001f, futureAhead = 0.5f;
+    private int currentPath = 0;
     // Start is called before the first frame update
     void Start()
     {
@@ -38,8 +38,7 @@ public class MoveWithMouse : MonoBehaviour
             var posY = Input.mousePosition.y;
             var worldPos = Camera.main.ScreenToWorldPoint(new Vector3(posX, posY, 10));
             worldPos.y = 0f;
-            TryGetPath(worldPos);
-            
+            TryGetPath(worldPos);  
         }
         try
         {
@@ -56,14 +55,8 @@ public class MoveWithMouse : MonoBehaviour
         {
 
         }
-        // FollowPath();// this is  original method.
         FollowPath(path);// this is new one with AddForce. But need to Fix.
 
-        // Vector3 target = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        // target.y = 0;
-        // steeringForce +=  obstacleAvoidance() + Seek(target, m_Rigidbody.position, m_Rigidbody.velocity, maxSpeed, maxForce);
-        // m_Rigidbody.AddForce(steeringForce);
-        // m_Rigidbody.velocity = Vector3.ClampMagnitude(m_Rigidbody.velocity, maxForce);
     }
 
 
@@ -72,26 +65,27 @@ public class MoveWithMouse : MonoBehaviour
     {
         PathManager.Request(transform.position, end, true, onPathFound);
         PathManager.Request(transform.position, end, false, onPathFound2);
+        currentPath = 0;
     }
 
-    Vector3 obstacleAvoidance()
-    {
-        Vector3 steering = Vector3.zero;
-        RaycastHit hit;
-        Vector3 target = m_Rigidbody.velocity;
-        target.y = 0;
+    // Vector3 obstacleAvoidance()
+    // {
+    //     Vector3 steering = Vector3.zero;
+    //     RaycastHit hit;
+    //     Vector3 target = m_Rigidbody.velocity;
+    //     target.y = 0;
 
-        Debug.DrawRay(m_Rigidbody.position, target * 10f,Color.green);
-        bool rayHit = Physics.Raycast(m_Rigidbody.position, target, out hit, 1.5f, LayerMask.GetMask("unwalkable"));
-        if (rayHit)
-        {
-            print(hit.distance);
-            Vector3 diff = m_Rigidbody.position - hit.collider.gameObject.transform.position;
-            steering += diff;
-        }
-        steering = steering.normalized * 5f;
-        return steering;
-    }
+    //     Debug.DrawRay(m_Rigidbody.position, target * 10f,Color.green);
+    //     bool rayHit = Physics.Raycast(m_Rigidbody.position, target, out hit, 1.5f, LayerMask.GetMask("unwalkable"));
+    //     if (rayHit)
+    //     {
+    //         print(hit.distance);
+    //         Vector3 diff = m_Rigidbody.position - hit.collider.gameObject.transform.position;
+    //         steering += diff;
+    //     }
+    //     steering = steering.normalized * 5f;
+    //     return steering;
+    // }
     void onPathFound(List<Vector3> _path, bool pathSuccessful)
     {
         if (pathSuccessful)
@@ -134,72 +128,65 @@ public class MoveWithMouse : MonoBehaviour
 
     void FollowPath(List<Vector3> pathList)
     {
-        // if (pathList != null && pathList.Count != 0 && currentPath < pathList.Count)
-        // {
-        //     Vector3 target = pathList[currentPath];
-        //     if(Vector3.Distance(m_Rigidbody.position, target) <= pathRadius)
-        //     {
-        //         currentPath ++;
-        //     }
-        //     if(target != null)
-        //     {
-        //         m_Rigidbody.AddForce(Seek(target, m_Rigidbody.position, m_Rigidbody.velocity, maxSpeed));
-        //         m_Rigidbody.velocity = Vector3.ClampMagnitude(m_Rigidbody.velocity, maxForce); 
-        //     }
-        // }
+
         if (pathList != null && pathList.Count != 0)
         {
-            Vector3 futurePosition = m_Rigidbody.position + m_Rigidbody.velocity * futureAhead;
-            Debug.DrawLine(m_Rigidbody.position, futurePosition, Color.red);
-            Vector3 target = Vector3.zero, normal = Vector3.zero;
-            int idx = 0;
-            float temp = 10000000f;
-            for(int i = 0; i < pathList.Count - 1; i++)
-            {
-                Vector3 start = pathList[i];
-                Vector3 end = pathList[i+1];
-                Vector3 projection = FindTarget(start, end, futurePosition);
-                if (projection.x < start.x || projection.x > end.x) 
-                {
-                    projection = end;
-                }
-                float distance = Vector3.Distance(futurePosition, projection);
-                if(distance < temp)
-                {
-                    temp = distance;
-                    idx = i+1; 
-                    normal = projection;
-                    Vector3 dir = (end - start).normalized * 10f;
-                    target = projection;
-                    target += dir;
-                }
-            }
+            Vector3 futurePosition = m_Rigidbody.position + (m_Rigidbody.velocity.normalized * futureAhead);
 
-            if(temp > pathRadius)
+            Vector3 start = pathList[currentPath];
+            Vector3 end = pathList[currentPath+1];
+            Vector3 projectedVector = FindTarget(start, end, futurePosition);
+            Vector3 target = Vector3.zero;
+            Vector3 futureProjected = projectedVector + ((end - start).normalized * futureAhead);
+
+            float distance = Vector3.Distance(futurePosition, projectedVector);
+
+            if (distance > pathRadius) 
             {
-                m_Rigidbody.AddForce(Seek(target, m_Rigidbody.position, m_Rigidbody.velocity, maxSpeed, maxForce));
+                target = futureProjected;
             }
-            if(Vector3.Distance(pathList[pathList.Count-1], m_Rigidbody.position) <= 1f)
+            else 
             {
-                m_Rigidbody.velocity = Vector3.zero;
-                m_Rigidbody.AddForce(Arrive(pathList[pathList.Count-1], m_Rigidbody.position, m_Rigidbody.velocity, maxSpeed, maxForce, slowingRadius));
+                target = futurePosition;
             }
-            
+            if (Vector2.Distance(start, projectedVector) > Vector2.Distance(start, end))
+            {
+                if (currentPath + 2 < pathList.Count) 
+                {
+                    currentPath++;
+
+                }
+                else
+                {
+                    target = pathList[pathList.Count-1];
+
+                }
+
+            }
+            else
+            {
+                if (!PointIsOnPath(start, end, projectedVector))
+                {
+                    target = pathList[currentPath];
+                }
+            }
+            Debug.DrawLine(m_Rigidbody.position, target, Color.red);
+            GetComponent<MeshRenderer>().transform.rotation = Quaternion.Slerp(GetComponent<MeshRenderer>().transform.rotation,  Quaternion.Euler(target), 0.1f);
+            m_Rigidbody.AddForce(Seek(target, m_Rigidbody.position, m_Rigidbody.velocity, maxSpeed, maxForce));
         }
     }
 
 
     Vector3 FindTarget(Vector3 start, Vector3 end, Vector3 futurePostion)
     {
-        Vector3 v1 = futurePostion - start;
-        Vector3 v2 = (end - start).normalized;
-        float dotProducts = Vector2.Dot(new Vector2(v1.x, v1.z), new Vector2(v2.x, v2.z));
-        v2 *= dotProducts;
-        v2 += start;
-        return v2;
+        Vector3 startToFuturePos = futurePostion - start;
+        Vector3 pathDir = (end - start).normalized;
+        float dotProducts = Vector2.Dot(new Vector2(startToFuturePos.x, startToFuturePos.z), new Vector2(pathDir.x, pathDir.z));
+        pathDir *= dotProducts;
+        pathDir += start;
+        return pathDir;
+
     }
-
-
 
 
     void FollowPath()
