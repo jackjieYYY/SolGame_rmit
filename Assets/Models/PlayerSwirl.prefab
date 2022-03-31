@@ -113,7 +113,6 @@ GameObject:
   - component: {fileID: 7410966526651948219}
   - component: {fileID: 2751662184160464115}
   - component: {fileID: 4124873167065227590}
-  - component: {fileID: 4737317697299806096}
   - component: {fileID: 6785925347514309604}
   m_Layer: 0
   m_Name: PlayerSwirl
@@ -167,20 +166,6 @@ CapsuleCollider:
   m_Height: 0.1
   m_Direction: 0
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &4737317697299806096
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2611988723968014834}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6361a207717d848449f92eb430ac2b2c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  hited: {fileID: 264289265482564331, guid: 1dc74dceede028d42bd9b429d49a09c9, type: 3}
-  speed: 1
 --- !u!114 &6785925347514309604
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -193,5 +178,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 92b84f69ad76a624486a0cb3a8a1855f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hited: {fileID: 0}
+  hited: {fileID: 264289265482564331, guid: 1dc74dceede028d42bd9b429d49a09c9, type: 3}
   speed: 2
