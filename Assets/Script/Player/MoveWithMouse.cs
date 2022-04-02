@@ -9,20 +9,22 @@ public class MoveWithMouse : MonoBehaviour
     Rigidbody m_Rigidbody;
     float mouseAngle;
     List<Vector3> path, path2;
-    int targetIndex;
     float speed = 0.01f;
 
     float nextFire;
     float fireRate = 0.5f;
 
     [SerializeField] private float maxForce =  20f, maxSpeed = 20f, slowingRadius = 0.5f, drag = 4f;
-    [SerializeField] private float pathRadius = 0.001f, futureAhead = 0.25f;
+    [SerializeField] private float pathRadius = 0.001f, futureAhead = 0.25f, avoidanceDistance = 3f, avoidanceWidth = 2f;
     private int currentPath = 0;
+    Vector3 lastClickPosition, steering;
+
     // Start is called before the first frame update
     void Start()
     {
         m_Rigidbody = GetComponent<Rigidbody>();
         m_Rigidbody.drag = this.drag;
+        lastClickPosition = m_Rigidbody.position;    
     }
 
     private void FixedUpdate()
@@ -30,7 +32,6 @@ public class MoveWithMouse : MonoBehaviour
         //The screen is oriented vertically upward is 0 degrees this.mouseAngle
         getMouseAngle();
         m_Rigidbody.rotation = Quaternion.Euler(0f, this.mouseAngle, 0f);
-
         if (Input.GetButton("Fire2") && Time.time > nextFire)
         {
             nextFire = Time.time + fireRate;
@@ -38,7 +39,9 @@ public class MoveWithMouse : MonoBehaviour
             var posY = Input.mousePosition.y;
             var worldPos = Camera.main.ScreenToWorldPoint(new Vector3(posX, posY, 10));
             worldPos.y = 0f;
-            TryGetPath(worldPos);  
+            TryGetPath(worldPos); 
+            lastClickPosition = worldPos;
+
         }
         try
         {
@@ -55,8 +58,11 @@ public class MoveWithMouse : MonoBehaviour
         {
 
         }
-        FollowPath(path);// this is new one with AddForce. But need to Fix.
-
+        Vector3 targetDir = lastClickPosition - m_Rigidbody.position;
+        transform.rotation = Quaternion.Slerp(transform.rotation,  Quaternion.Euler(new Vector3(0f,Mathf.Atan2(targetDir.x, targetDir.z) * Mathf.Rad2Deg, 0f)), 0.1f);
+        // steering = Seek(lastClickPosition, m_Rigidbody.position, m_Rigidbody.velocity, maxSpeed, maxForce) + obstacleAvoidance();
+        // m_Rigidbody.AddForce(steering);
+        FollowPath(path);
     }
 
 
@@ -68,24 +74,37 @@ public class MoveWithMouse : MonoBehaviour
         currentPath = 0;
     }
 
-    // Vector3 obstacleAvoidance()
-    // {
-    //     Vector3 steering = Vector3.zero;
-    //     RaycastHit hit;
-    //     Vector3 target = m_Rigidbody.velocity;
-    //     target.y = 0;
-
-    //     Debug.DrawRay(m_Rigidbody.position, target * 10f,Color.green);
-    //     bool rayHit = Physics.Raycast(m_Rigidbody.position, target, out hit, 1.5f, LayerMask.GetMask("unwalkable"));
-    //     if (rayHit)
-    //     {
-    //         print(hit.distance);
-    //         Vector3 diff = m_Rigidbody.position - hit.collider.gameObject.transform.position;
-    //         steering += diff;
-    //     }
-    //     steering = steering.normalized * 5f;
-    //     return steering;
-    // }
+    Vector3 obstacleAvoidance()
+    {
+        float radius = 0.3f;
+        Vector3 bottomRight = m_Rigidbody.position + (transform.right * radius) + (-transform.forward * radius);
+        Vector3 bottomLeft = m_Rigidbody.position + (-transform.right * radius) + (-transform.forward * radius);
+        Vector3 topRight = m_Rigidbody.position + ((transform.right * radius * avoidanceWidth) + (transform.forward * avoidanceDistance));
+        Vector3 topLeft = m_Rigidbody.position + (-transform.right * radius* avoidanceWidth) + (transform.forward * avoidanceDistance);
+        Debug.DrawRay(bottomRight, topRight - bottomRight, Color.green);
+        Debug.DrawRay(bottomLeft, topLeft - bottomLeft, Color.green);
+        Debug.DrawRay(bottomRight, bottomLeft - bottomRight, Color.green);
+        Debug.DrawRay(topRight, topLeft - topRight, Color.green);
+        RaycastHit[] hits = new RaycastHit[2];
+        bool[] isHit = new bool[2];
+        isHit[0] = Physics.Raycast(bottomLeft, topLeft - bottomLeft, out hits[0], avoidanceDistance, LayerMask.GetMask("unwalkable"));
+        isHit[1] = Physics.Raycast(bottomRight, topRight - bottomRight, out hits[1], avoidanceDistance,  LayerMask.GetMask("unwalkable"));
+        // Debug.DrawLine(m_Rigidbody.position, hits[0].point, Color.green);
+        // Debug.DrawLine(m_Rigidbody.position, hits[1].point, Color.red);
+        int leftOrRight = isHit[0] ? 0 : isHit[1] ? 1 : -1;
+        if(leftOrRight != -1)
+        {
+            Vector3 dir = leftOrRight == 0 ? topRight : topLeft;
+            Vector3 steeringToAvoid = dir + m_Rigidbody.position - hits[leftOrRight].collider.transform.position;
+            steeringToAvoid *= Vector3.Distance(m_Rigidbody.position, hits[leftOrRight].collider.transform.position);
+            return Seek(steeringToAvoid,m_Rigidbody.position, m_Rigidbody.velocity, maxSpeed, maxForce);
+        }
+        else
+        {
+            return Vector3.zero;
+        }
+        
+    }
     void onPathFound(List<Vector3> _path, bool pathSuccessful)
     {
         if (pathSuccessful)
@@ -133,6 +152,7 @@ public class MoveWithMouse : MonoBehaviour
         {
             float worldRecord = 10000000000f;
             Vector3 target = Vector3.zero;
+            
             Vector3 futurePosition = m_Rigidbody.position + (m_Rigidbody.velocity.normalized * futureAhead);
             for(int i = 0; i < pathList.Count-1;i++)
             {
@@ -153,19 +173,28 @@ public class MoveWithMouse : MonoBehaviour
                 if (distance < worldRecord) 
                 {
                     worldRecord = distance;
+                    currentPath = i;
                     Vector3 dir = (end - start).normalized * futureAhead;
                     target = normalPoint + dir;
                 }
 
+
             }
             if(worldRecord > pathRadius)
             {
-                Debug.DrawLine(m_Rigidbody.position, target, Color.red);
-                GetComponent<MeshRenderer>().transform.rotation = Quaternion.Slerp(GetComponent<MeshRenderer>().transform.rotation,  Quaternion.Euler(target), 0.1f);
-                m_Rigidbody.AddForce(Arrive(target, m_Rigidbody.position, m_Rigidbody.velocity, maxSpeed, maxForce, slowingRadius));  
-                // m_Rigidbody.AddForce(Seek(target, m_Rigidbody.position, m_Rigidbody.velocity, maxSpeed, maxForce));     
+                if(currentPath == pathList.Count - 2)
+                {
+                    m_Rigidbody.AddForce(Arrive(target, m_Rigidbody.position, m_Rigidbody.velocity, maxSpeed, maxForce, slowingRadius));
+                    currentPath = 0;  
+                }
+                else
+                {
+                    m_Rigidbody.AddForce(Seek(target, m_Rigidbody.position, m_Rigidbody.velocity, maxSpeed, maxForce));     
+                }
+                m_Rigidbody.AddForce(obstacleAvoidance());
             }
-            
+            Vector3 targetDir = target - m_Rigidbody.position;
+            transform.rotation = Quaternion.Slerp(transform.rotation,  Quaternion.Euler(new Vector3(0f,Mathf.Atan2(targetDir.x, targetDir.z) * Mathf.Rad2Deg, 0f)), 0.1f);
         }
     }
 
@@ -205,6 +234,8 @@ public class MoveWithMouse : MonoBehaviour
         mousePos.y = mousePos.y - objectPos.y;
         this.mouseAngle = Mathf.Atan2(mousePos.x, mousePos.y) * Mathf.Rad2Deg;
     }
+
+
     // void OnDrawGizmos()
     // {
     //     if (path != null)
