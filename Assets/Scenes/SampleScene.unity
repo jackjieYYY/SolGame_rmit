@@ -280,6 +280,11 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 289113479}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &321890472 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6017853717636381541, guid: a4958fc22629f8745adc772d23ff6cf8, type: 3}
+  m_PrefabInstance: {fileID: 6017853716233949756}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &403380017
 GameObject:
   m_ObjectHideFlags: 0
@@ -1037,7 +1042,7 @@ Transform:
   m_GameObject: {fileID: 792481821}
   m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
   m_LocalPosition: {x: 0, y: -1, z: 0}
-  m_LocalScale: {x: 25, y: 15, z: 1}
+  m_LocalScale: {x: 35, y: 20, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 10
@@ -1687,6 +1692,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1487670324}
   - component: {fileID: 1487670325}
+  - component: {fileID: 1487670326}
   m_Layer: 0
   m_Name: GameController
   m_TagString: Untagged
@@ -1726,6 +1732,32 @@ MonoBehaviour:
   scoreText: {fileID: 500860560}
   gameTime: {fileID: 2100094804}
   gameLevel: {fileID: 687167409}
+--- !u!114 &1487670326
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1487670323}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 544531d58d4bb7c43b1096c98041278f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  numBoids: 32
+  boidPrefab: {fileID: 7871596825745128649, guid: 266fd2595006d184bbc9d0ff621194c1, type: 3}
+  master: {fileID: 321890472}
+  spawnRadius: 20
+  spawnVelcoty: 1
+  minVelocity: 0
+  maxVelocity: 2
+  crashRadius: 1
+  swarmRadius: 32
+  randomAmt: 0.1
+  velocityMatchingAmt: 0.15
+  flockCenteringAmt: 0.12
+  crashAvoidanceAmt: 1.5
+  velocityLerpAmt: 0.05
 --- !u!1001 &1513084301
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2099,7 +2131,7 @@ Camera:
   far clip plane: 10
   field of view: 60
   orthographic: 1
-  orthographic size: 6
+  orthographic size: 8
   m_Depth: 0
   m_CullingMask:
     serializedVersion: 2
