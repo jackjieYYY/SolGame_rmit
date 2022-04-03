@@ -12,6 +12,8 @@ GameObject:
   - component: {fileID: 8632910688423602463}
   - component: {fileID: 2662414507659400678}
   - component: {fileID: 1702155735734620691}
+  - component: {fileID: -1435407101825561410}
+  - component: {fileID: 6758595097380636374}
   m_Layer: 0
   m_Name: Temperate
   m_TagString: Untagged
@@ -97,3 +99,27 @@ SphereCollider:
   serializedVersion: 2
   m_Radius: 0.5
   m_Center: {x: 0.005131677, y: -0.011431098, z: -0.021620274}
+--- !u!114 &-1435407101825561410
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4381472403175285050}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 30c1c02ad2ea622498d0381d25bffef4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &6758595097380636374
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4381472403175285050}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 30c1c02ad2ea622498d0381d25bffef4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

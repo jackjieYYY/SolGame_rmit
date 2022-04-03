@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 7564590163748258660}
   - component: {fileID: 1558760127797803346}
   - component: {fileID: 5088325926520210859}
+  - component: {fileID: 8401839341791933275}
   m_Layer: 0
   m_Name: Desert_Design2
   m_TagString: Untagged
@@ -54,6 +55,8 @@ MeshRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -80,3 +83,16 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &8401839341791933275
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6818884641722200439}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 30c1c02ad2ea622498d0381d25bffef4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
