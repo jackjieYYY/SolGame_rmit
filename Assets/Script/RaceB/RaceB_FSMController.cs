@@ -83,8 +83,13 @@ public class RaceB_FSMController : MonoBehaviour
         }
         else
         {
+            Debug.Log(collision.name);
             //if the collision object is not the ship, it should be destroyed on contact
-           Destroy(collision.gameObject);
+            if(collision.name == "PlayerBolt(Clone)" || collision.name == "PlayerSwirl(Clone)" || collision.name == "PlayerBlast(Clone)")
+            {
+                Destroy(collision.gameObject);
+            }
+            
         }
 
         //Regardless of what hits the drone, it should take damage
@@ -119,7 +124,7 @@ public class RaceB_FSMController : MonoBehaviour
         }
         else
         {
-            damage = 1;
+            damage = 0;
         }
         
         return damage;

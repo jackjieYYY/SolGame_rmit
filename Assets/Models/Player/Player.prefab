@@ -197,7 +197,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   fileRate: 0.5
-  shot: {fileID: 2611988723968014834, guid: 322f29f7fcbfd034495caeb769a12135, type: 3}
+  weaponType1: {fileID: 0}
+  weaponType2: {fileID: 0}
+  weaponType3: {fileID: 0}
   shotSpawn: {fileID: 6017853717024972512}
   boundary:
     xMin: -8

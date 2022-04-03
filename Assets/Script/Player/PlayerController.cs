@@ -121,11 +121,11 @@ public class PlayerController : MonoBehaviour
         acceleration *= acceleratorCooloff;
 
 
-        GetComponent<Rigidbody>().position = new Vector3(
+        GetComponent<Rigidbody>().MovePosition(new Vector3(
             Mathf.Clamp(m_Rigidbody.position.x + velocity.x, boundary.xMin, boundary.xMax),
             0f,
             Mathf.Clamp(m_Rigidbody.position.z + velocity.y, boundary.zMin, boundary.zMax)
-            );
+            ));
         GetComponent<Rigidbody>().rotation = Quaternion.AngleAxis(angle * Mathf.Rad2Deg + 90, Vector3.down);
 
     }
