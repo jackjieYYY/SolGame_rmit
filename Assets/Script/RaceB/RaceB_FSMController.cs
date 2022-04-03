@@ -11,7 +11,7 @@ public class RaceB_FSMController : MonoBehaviour
     public GameObject deathExplosion;
     public GameObject spawnAnimation;
 
-    public int HP = 2;
+    public int HP = 3;
     private GameController gameController;
     RandomRotator randomRotator;
 

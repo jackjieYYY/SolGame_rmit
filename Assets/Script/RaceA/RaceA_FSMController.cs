@@ -9,7 +9,7 @@ public class RaceA_FSMController : MonoBehaviour
     public GameObject deathExplosion;
     public GameObject spawnAnimation;
 
-    int HP = 1;
+    public int HP = 2;
     int hitByBoltCount = 0;
     int score = 1;
     private GameController gameController;

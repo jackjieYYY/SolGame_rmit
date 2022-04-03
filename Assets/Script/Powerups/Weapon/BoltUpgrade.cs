@@ -9,9 +9,9 @@ public class BoltUpgrade : MonoBehaviour
         PlayerController ship = collision.GetComponent<PlayerController>();
         if (ship != null)
         {
-            Debug.Log("Changed to weapon 2");
-            ship.ChangeWeapon(2);
-            Destroy(gameObject);
+                Debug.Log("Changed to weapon 2");
+                ship.ChangeWeapon(2);
+                Destroy(gameObject);
         }
     }
 }

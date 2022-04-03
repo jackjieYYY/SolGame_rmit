@@ -16,6 +16,7 @@ public class PlayerController : MonoBehaviour
     public float fileRate;
 
     GameObject shot;
+    int weapon;
     public GameObject weaponType1;
     public GameObject weaponType2;
     public GameObject weaponType3;
@@ -33,6 +34,8 @@ public class PlayerController : MonoBehaviour
 
     //Read only variables accessable from outside the script
     public int Health { get { return currentHealth; } }
+    public bool Invincibility { get { return Invincible;  } }
+    public int Weapon { get { return weapon; } }
 
     //Thrust and movement related variables
     float thrust = 0.001f; // How long we have to hold to get to max speed (higher quicker)
@@ -56,6 +59,7 @@ public class PlayerController : MonoBehaviour
         currentHealth = Maximumhealth;
 
         shot = weaponType1;
+        weapon = 1;
     }
 
     // Update is called once per frame
@@ -98,10 +102,10 @@ public class PlayerController : MonoBehaviour
 
         // Get our controller input and translate it to thrust / rotation           
         if ((Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow)) && acceleration < maxThrust)
-            acceleration -= thrust;
+            acceleration += thrust;
 
         if ((Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow)) && acceleration > -maxThrust)
-            acceleration += thrust;
+            acceleration -= thrust;
         
         if ((Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow)))
             angle -= rotationSpeed;
@@ -150,19 +154,22 @@ public class PlayerController : MonoBehaviour
     }
 
     //Change weapon functions
-    public void ChangeWeapon(int weapon)
+    public void ChangeWeapon(int weaponSwap)
     {
-        if (weapon == 1)
+        if (weaponSwap == 1)
         {
             shot = weaponType1;
+            weapon = 1;
         }
-        else if (weapon == 2)
+        else if (weaponSwap == 2)
         {
             shot = weaponType2;
+            weapon = 2;
         }
         else
         {
             shot = weaponType3;
+            weapon = 3;
         }
     }
 
