@@ -9,6 +9,9 @@ public class GameController : MonoBehaviour
     public GameObject RaceADroid;
     List<GameObject> RaceBDroidList = new List<GameObject>();
     List<GameObject> RaceADroidList = new List<GameObject>();
+    GameObject ship;
+    public PlayerController shipController;
+
     int maxDroid = 3;
     float DroidSpeed = 0.01f;
 
@@ -24,10 +27,16 @@ public class GameController : MonoBehaviour
     public Text scoreText;
     public Text gameTime;
     public Text gameLevel;
+    public Text healthText;
+    public Text invincibilityText;
     int hour;
     int minute;
     int second;
     float timeSpend = 0f;
+    
+    // health of ship information
+    int health;
+    
     //-------------------UIsetting end--------------------
 
 
@@ -36,6 +45,13 @@ public class GameController : MonoBehaviour
     {
         // open a new Thread
         StartCoroutine(spawnDroid());
+
+        ship = GameObject.Find("Player");
+        if (ship != null)
+        {
+            shipController = ship.GetComponent<PlayerController>();
+        }
+            
     }
 
     /// <summary>
@@ -86,6 +102,8 @@ public class GameController : MonoBehaviour
         gameTimeUpdate();
         gameLevelUpdate();
         LevelUpdate();
+        HealthUpdate();
+        InvincibilityUpdate();
     }
 
     public void updateScore()
@@ -93,7 +111,21 @@ public class GameController : MonoBehaviour
         scoreText.text = string.Format("Score: {0}", score.ToString());
     }
 
-
+    public void HealthUpdate()
+    {
+        if (GameObject.Find("Player") != null)
+        {
+            healthText.text = string.Format("Health: {0}", shipController.Health);
+        }
+        //Debug.Log(shipController.Health);
+    }
+    public void InvincibilityUpdate()
+    {
+        if(GameObject.Find("Player") != null)
+        {
+            invincibilityText.text = string.Format("Invincible: {0}", shipController.Invincibility);
+        }
+    }
 
     public void addScore(int value)
     {
