@@ -25,6 +25,9 @@ public class PlayerController : MonoBehaviour
 
     private float mouseAngle;
 
+    //Death explosion
+    public GameObject deathExplosion;
+
     //Health and invincibility related variables
     public float InvincibilityTimer = 2.0f; // The amount of  time the ship is invincible after a hit
     public int Maximumhealth = 5; //The maximum health of the ship
@@ -49,6 +52,21 @@ public class PlayerController : MonoBehaviour
     float acceleration;
     Vector3 velocity;
 
+    //audio sources
+    public AudioClip bolt;
+    public AudioClip blast;
+    public AudioClip swirl;
+    public AudioClip damage;
+    public AudioClip increaseHealth;
+    public AudioClip explosion;
+
+    AudioSource Bolt;
+    AudioSource Blast;
+    AudioSource Swirl;
+    AudioSource Damage;
+    AudioSource IncreaseHealth;
+    AudioSource Explosion;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -58,8 +76,24 @@ public class PlayerController : MonoBehaviour
         //set the initial health of the ship
         currentHealth = Maximumhealth;
 
+        //default weapon setup
         shot = weaponType1;
         weapon = 1;
+
+        //audio sources
+        Bolt = AddAudio(false, false, 0.4f);
+        Blast = AddAudio(false, false, 0.4f);
+        Swirl = AddAudio(false, false, 0.4f);
+        Damage = AddAudio(false, false, 0.4f);
+        IncreaseHealth = AddAudio(false, false, 0.4f);
+        Explosion = AddAudio(false, false, 0.4f);
+
+        Bolt.clip = bolt;
+        Blast.clip = blast;
+        Swirl.clip = swirl;
+        Damage.clip = damage;
+        IncreaseHealth.clip = increaseHealth;
+        Explosion.clip = explosion;
     }
 
     // Update is called once per frame
@@ -73,6 +107,7 @@ public class PlayerController : MonoBehaviour
             Debug.Log("father shotSpawn.transform.position " + shotSpawn.transform.position);
             GameObject temp = Instantiate(shot, shotSpawn.transform.position, Quaternion.Euler(0f, mouseAngle, transform.rotation.z));
             Destroy(temp, 10f);
+            playShot();
         }
 
         //Keyboard inputs
@@ -82,6 +117,7 @@ public class PlayerController : MonoBehaviour
             Debug.Log("father shotSpawn.transform.position " + shotSpawn.transform.position);
             GameObject temp = Instantiate(shot, shotSpawn.transform.position, Quaternion.AngleAxis(angle * Mathf.Rad2Deg - 90, Vector3.down));
             Destroy(temp, 5f);
+            playShot();
         }
 
         //invincibility checks
@@ -128,6 +164,12 @@ public class PlayerController : MonoBehaviour
             ));
         GetComponent<Rigidbody>().rotation = Quaternion.AngleAxis(angle * Mathf.Rad2Deg + 90, Vector3.down);
 
+        //check if ship is dead
+        if (Health <= 0)
+        {
+            killShip();
+            //Destroy(collision.gameObject);
+        }
     }
 
     // Health related functions
@@ -135,7 +177,8 @@ public class PlayerController : MonoBehaviour
     {
         if(amount < 0)
         {
-            if(Invincible)
+            
+            if (Invincible)
             {
                 return;
             }
@@ -146,11 +189,17 @@ public class PlayerController : MonoBehaviour
                 // Start invincibility
                 Invincible = true;
                 InvincibleTime = InvincibilityTimer;
+                Damage.Play();
             }
+        }
+        else
+        {
+            IncreaseHealth.Play();
         }
 
         currentHealth = Mathf.Clamp(currentHealth + amount, 0, Maximumhealth);
         Debug.Log("Ship Health: " + currentHealth);
+        
     }
 
     //Change weapon functions
@@ -173,6 +222,14 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    //spawn explosion
+    public void killShip()
+    {
+        var dieAnimationObject = MonoSub.Instantiate(deathExplosion, gameObject.transform.position, gameObject.transform.rotation);
+        AudioSource.PlayClipAtPoint(explosion, this.gameObject.transform.position);
+        Destroy(gameObject);
+    }
+
     // Mouse firing related functions
     void getMouseAngle()
     {
@@ -182,5 +239,37 @@ public class PlayerController : MonoBehaviour
         mousePos.x = mousePos.x - objectPos.x;
         mousePos.y = mousePos.y - objectPos.y;
         this.mouseAngle = Mathf.Atan2(mousePos.x, mousePos.y) * Mathf.Rad2Deg;
+    }
+
+    //playing audio functions
+    void playShot()
+    {
+        if(weapon == 1)
+        {
+            Blast.Play();
+        }
+        else if (weapon == 2 )
+        {
+            Bolt.Play();
+        }
+        else
+        {
+            Swirl.Play();
+        }
+    }
+
+    public AudioSource AddAudio(bool loop, bool playAwake, float vol)
+    {
+        AudioSource newAudio = gameObject.AddComponent<AudioSource>();
+        newAudio.loop = loop;
+        newAudio.playOnAwake = playAwake;
+        newAudio.volume = vol;
+
+        return newAudio;
+    }
+
+    private class MonoSub : MonoBehaviour
+    {
+
     }
 }

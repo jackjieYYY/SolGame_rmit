@@ -129,6 +129,8 @@ MonoBehaviour:
   deathExplosion: {fileID: 8038344524183138613, guid: 0277167a12290af47801444830a2be97, type: 3}
   spawnAnimation: {fileID: 1459862227383078, guid: cc461484bcafc664fb68be84c1fc6860, type: 3}
   HP: 2
+  explosion: {fileID: 8300000, guid: 654d1ed270c714ddb8c934ac5fef5edc, type: 3}
+  passiveNoise: {fileID: 8300000, guid: 7298cdd19e7244a4f9a880e0058b5c8c, type: 3}
 --- !u!64 &7199778855511283033
 MeshCollider:
   m_ObjectHideFlags: 0
