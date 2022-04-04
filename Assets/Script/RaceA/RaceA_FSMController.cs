@@ -10,10 +10,16 @@ public class RaceA_FSMController : MonoBehaviour
     public GameObject spawnAnimation;
 
     public int HP = 2;
-    int hitByBoltCount = 0;
     int score = 1;
     private GameController gameController;
     RandomRotator randomRotator;
+
+    // audio engines
+    public AudioClip explosion;
+    public AudioClip passiveNoise;
+
+    AudioSource Explosion;
+    AudioSource PassiveNoise;
 
     private void Awake()
     {
@@ -43,7 +49,13 @@ public class RaceA_FSMController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+        // Audio sources
+        Explosion = AddAudio(false, false, 0.4f);
+        PassiveNoise = AddAudio(false, false, 0.4f);
+
+        Explosion.clip = explosion;
+        PassiveNoise.clip = passiveNoise;
+
     }
 
     // Update is called once per frame
@@ -72,19 +84,27 @@ public class RaceA_FSMController : MonoBehaviour
             //if the ship is on zero health, destroy it as well
             if (ship.Health <= 0)
             {
-                Destroy(collision.gameObject);
+                //create explosion
+                //ship.killShip();
+                //Destroy(collision.gameObject);
             }
         }
         else
         {
+            Debug.Log(collision.name);
             //if the collision object is not the ship, it should be destroyed on contact
-            Destroy(collision.gameObject);
+            if(collision.name == "PlayerBolt(Clone)" || collision.name == "PlayerSwirl(Clone)" || collision.name == "PlayerBlast(Clone)")
+            {
+                Destroy(collision.gameObject);
+            }
+            
         }
 
         //Regardless of what hits the drone, it should take damage
         HP = HP - damage;
         if (HP <= 0)
         {
+            AudioSource.PlayClipAtPoint(explosion, this.gameObject.transform.position);
             gameController.addScore(score);
             m_Fsm.TransitionState(StateType.Die);
         }
@@ -115,10 +135,19 @@ public class RaceA_FSMController : MonoBehaviour
         }
         else
         {
-            damage = 1;
+            damage = 0;
         }
 
         return damage;
+    }
+    public AudioSource AddAudio(bool loop, bool playAwake, float vol)
+    {
+        AudioSource newAudio = gameObject.AddComponent<AudioSource>();
+        newAudio.loop = loop;
+        newAudio.playOnAwake = playAwake;
+        newAudio.volume = vol;
+
+        return newAudio;
     }
 
 }

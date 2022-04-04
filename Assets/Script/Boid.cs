@@ -6,8 +6,8 @@ public class Boid : MonoBehaviour
 {
     static public List<Boid> boids;
 
-    public Vector3 velocity;        
-    public Vector3 newVelocity;     
+    public Vector3 velocity;
+    public Vector3 newVelocity;
     public Vector3 newPosition;
 
     float randomStrength = 2.0f;
@@ -15,15 +15,15 @@ public class Boid : MonoBehaviour
     float crashRadius = 2.0f;
     float swarmRadius = 32.0f;
 
-    public Boid closest;                
+    public Boid closest;
 
     private void Awake()
     {
-        
+
         if (boids == null)
             boids = new List<Boid>();
 
-        
+
         boids.Add(this);
 
         // Place our boid in a random position
@@ -31,17 +31,17 @@ public class Boid : MonoBehaviour
         randPos.y = 1;
         this.transform.position = randPos;
 
-        
+
         // Give them a random initial velocity
         velocity = Random.onUnitSphere;
         velocity *= BoidSpawner.S.spawnVelcoty;
 
-        
+
         Color randColor = Color.black;
 
         while (randColor.r + randColor.g + randColor.b < 1.0f)
             randColor = new Color(Random.value, Random.value, Random.value);
-        
+
         Renderer[] rends = gameObject.GetComponentsInChildren<Renderer>();
         foreach (Renderer r in rends)
             r.material.color = randColor;
@@ -69,7 +69,7 @@ public class Boid : MonoBehaviour
 
         // Avoid each other
         Vector3 dist;
-        if (crashRisks.Count > 0) 
+        if (crashRisks.Count > 0)
         {
             Vector3 averageCrashVec = GetAveragePosition(crashRisks);
             dist = averageCrashVec - this.transform.position;
@@ -101,25 +101,25 @@ public class Boid : MonoBehaviour
 
         this.transform.LookAt(newPosition);
 
-        this.transform.position = newPosition;;
+        this.transform.position = newPosition; ;
 
     }
 
     public List<Boid> Getneighbours(Boid boi)
     {
         List<Boid> neighbours = new List<Boid>();
-        
-        Vector3 delta;              
+
+        Vector3 delta;
         float dist;
 
-        neighbours.Clear();    
+        neighbours.Clear();
 
         foreach (Boid b in boids)
         {
             if (b == boi) // Skip if we're matching ourselves
                 continue;
 
-            delta = b.transform.position - boi.transform.position; 
+            delta = b.transform.position - boi.transform.position;
             dist = delta.magnitude;
 
             if (dist < swarmRadius) // Are they in our radius
@@ -163,7 +163,7 @@ public class Boid : MonoBehaviour
         return (center);
     }
 
-   
+
     public Vector3 GetAverageVelocity(List<Boid> someBoids)
     {
         Vector3 sum = Vector3.zero;
