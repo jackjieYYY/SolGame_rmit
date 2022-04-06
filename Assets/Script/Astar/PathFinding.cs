@@ -169,14 +169,6 @@ public class PathFinding : MonoBehaviour
                         //will not very different from the re-smoothed path.
 
                         Vector3 direction = (pathInVec3[j] - pathInVec3[i]).normalized * (pathInVec3[j] - pathInVec3[i]).magnitude;
-                        bool hit = Physics.Raycast(pathInVec3[i], direction, (pathInVec3[j] - pathInVec3[i]).magnitude, unwalkableMask);
-                        if (hit)
-                        {
-                            pathSmoothing.Add(pathInVec3[j - 1]);
-                            currIdx = j - 1;
-                            break;
-                        }
-                        else
                         {
                             for (float k = 0; k < (pathInVec3[j] - pathInVec3[i]).magnitude; k += 0.01f)
                             {
@@ -186,7 +178,7 @@ public class PathFinding : MonoBehaviour
                                 bool existed = false;
                                 foreach(Node node in nodeList)
                                 {
-                                    if(!node.walkable)
+                                    if(node.costMultiplier != Node.initCostMultiplier)
                                     {
                                         existed = true;
                                         break;
@@ -223,35 +215,22 @@ public class PathFinding : MonoBehaviour
     {
         int dstX = Mathf.Abs(nodeA.gridX - nodeB.gridX);
         int dstY = Mathf.Abs(nodeA.gridY - nodeB.gridY);
-        bool unwalkableNear = false;
+        int maxCostMultiplier = 0;
         foreach(Node n in grid.GetNeighbours(nodeA))
         {
-            if(!n.walkable)
+            if(n.costMultiplier > maxCostMultiplier)
             {
-                unwalkableNear = true;
-                break;
+                maxCostMultiplier = n.costMultiplier;
             }
         }
-        if(!unwalkableNear)
+        foreach(Node n in grid.GetNeighbours(nodeB))
         {
-            foreach(Node n in grid.GetNeighbours(nodeB))
+            if(n.costMultiplier > maxCostMultiplier)
             {
-                if(!n.walkable)
-                {
-                    unwalkableNear = true;
-                    break;
-                }
+                maxCostMultiplier = n.costMultiplier;
             }
         }
-        if(unwalkableNear)
-        {
-            return OBSTACLE_DIAGONAL_COST * Mathf.Min(dstX, dstY) + OBSTACLE_STRAIGHT_COST * Mathf.Abs(dstX - dstY);
-        }
-        else
-        {
-            return NORMAL_DIAGONAl_COST * Mathf.Min(dstX, dstY) + NORMAL_STRAIGHT_COST * Mathf.Abs(dstX - dstY);
-        }
-
+        return NORMAL_DIAGONAl_COST * maxCostMultiplier * Mathf.Min(dstX, dstY) + NORMAL_STRAIGHT_COST * maxCostMultiplier * Mathf.Abs(dstX - dstY);
     }
 
     // Start is called before the first frame update
