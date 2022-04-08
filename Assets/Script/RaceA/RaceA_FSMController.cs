@@ -111,6 +111,13 @@ public class RaceA_FSMController : MonoBehaviour
 
     }
 
+    private void OnDestroy()
+    {
+        //AudioSource.PlayClipAtPoint(explosion, this.gameObject.transform.position);
+        gameController.addScore(score);
+        m_Fsm.TransitionState(StateType.Die);
+    }
+
     int checkWeaponDamage(Collider collision)
     {
         //check the associated components
