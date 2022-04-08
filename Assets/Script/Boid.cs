@@ -116,7 +116,7 @@ public class Boid : MonoBehaviour
 
         foreach (Boid b in boids)
         {
-            if (b == boi) // Skip if we're matching ourselves
+            if (b == boi || !b || !boi) // Skip if we're matching ourselves or dead
                 continue;
 
             delta = b.transform.position - boi.transform.position;
@@ -138,7 +138,7 @@ public class Boid : MonoBehaviour
 
         foreach (Boid b in boids)
         {
-            if (b == boi) // Skip if we're matching ourselves
+            if (b == boi || !b || !boi) // Skip if we're matching ourselves or dead
                 continue;
 
             delta = b.transform.position - boi.transform.position;
@@ -157,7 +157,8 @@ public class Boid : MonoBehaviour
     {
         Vector3 sum = Vector3.zero;
         foreach (Boid b in someBoids)
-            sum += b.transform.position;
+            if (b) // Skip if dead
+                sum += b.transform.position;
         Vector3 center = sum / someBoids.Count;
 
         return (center);
@@ -168,7 +169,8 @@ public class Boid : MonoBehaviour
     {
         Vector3 sum = Vector3.zero;
         foreach (Boid b in someBoids)
-            sum += b.velocity;
+            if (b) // Skip if dead
+                sum += b.velocity;
         Vector3 avg = sum / someBoids.Count;
 
         return (avg);
