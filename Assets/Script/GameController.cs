@@ -18,6 +18,7 @@ public class GameController : MonoBehaviour
 
     int level = 1;
     public Vector3 spawnValue;
+
     int maxSpawnWaitTime = 5;
 
     public Text GameOverText;

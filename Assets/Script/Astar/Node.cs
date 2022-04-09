@@ -16,13 +16,15 @@ public class Node
 
     public int heapIndex;
 
-
+    public int costMultiplier;
+    public readonly static int initCostMultiplier = 1;
     public Node(bool _walkable,Vector3 _worldPostion,int _gridX,int _gridY)
     {
         walkable = _walkable;
         worldPostion = _worldPostion;
         gridX = _gridX;
         gridY = _gridY;
+        costMultiplier = initCostMultiplier;
     }
 
     public int fcost

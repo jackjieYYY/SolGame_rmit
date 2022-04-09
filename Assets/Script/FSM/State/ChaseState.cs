@@ -68,7 +68,7 @@ public class ChaseState : IState
 
     void TryGetPath(Vector3 end)
     {
-        PathManager.Request(m_GameObject.transform.position, end, onPathFound);
+        PathManager.Request(m_GameObject.transform.position, end, true, onPathFound);
     }
 
     void onPathFound(List<Vector3> _path, bool pathSuccessful)
