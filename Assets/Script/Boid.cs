@@ -6,46 +6,42 @@ public class Boid : MonoBehaviour
 {
     static public List<Boid> boids;
 
-    public Vector3 velocity;        
-    public Vector3 newVelocity;     
+    public Vector3 velocity;
+    public Vector3 newVelocity;
     public Vector3 newPosition;
 
     float randomStrength = 2.0f;
 
-    public List<Boid> neighbors;        
-    public List<Boid> collisionRisks;   
-    public Boid closest;                
+    float crashRadius = 2.0f;
+    float swarmRadius = 32.0f;
+
+    public Boid closest;
 
     private void Awake()
     {
-        
+
         if (boids == null)
             boids = new List<Boid>();
 
-        
+
         boids.Add(this);
 
-        
+        // Place our boid in a random position
         Vector3 randPos = Random.insideUnitSphere * BoidSpawner.S.spawnRadius;
-
-        
         randPos.y = 1;
         this.transform.position = randPos;
 
-        
-        velocity = Random.onUnitSphere * randomStrength;
+
+        // Give them a random initial velocity
+        velocity = Random.onUnitSphere;
         velocity *= BoidSpawner.S.spawnVelcoty;
 
-        
-        neighbors = new List<Boid>();
-        collisionRisks = new List<Boid>();
 
-        
         Color randColor = Color.black;
 
         while (randColor.r + randColor.g + randColor.b < 1.0f)
             randColor = new Color(Random.value, Random.value, Random.value);
-        
+
         Renderer[] rends = gameObject.GetComponentsInChildren<Renderer>();
         foreach (Renderer r in rends)
             r.material.color = randColor;
@@ -53,37 +49,45 @@ public class Boid : MonoBehaviour
 
     private void Update()
     {
-        List<Boid> neighbors = GetNeighbors(this);
+        List<Boid> neighbours = Getneighbours(this);
+        List<Boid> crashRisks = GetCrashRisks(this);
 
         newVelocity = velocity;
         newPosition = this.transform.position;
 
 
-        Vector3 neighborVel = GetAverageVelocity(neighbors);
-       
-        newVelocity += neighborVel * BoidSpawner.S.velocityMatchingAmt;
+        Vector3 randVelocity = Random.onUnitSphere;
+        newVelocity += randVelocity * BoidSpawner.S.randomAmt;
 
-        Vector3 neighborCenterOffset = GetAveragePosition(neighbors) - this.transform.position;
+        // Try move with a uniform pattern
+        Vector3 neighbourVel = GetAverageVelocity(neighbours);
+        newVelocity += neighbourVel * BoidSpawner.S.velocityMatchingAmt;
 
-        newVelocity += neighborCenterOffset * BoidSpawner.S.flockCenteringAmt;
+        // Try move towards the same goal
+        Vector3 neighbourCenterOffset = GetAveragePosition(neighbours) - this.transform.position;
+        newVelocity += neighbourCenterOffset * BoidSpawner.S.flockCenteringAmt;
 
+        // Avoid each other
         Vector3 dist;
-        if (collisionRisks.Count > 0) 
+        if (crashRisks.Count > 0)
         {
-            Vector3 collisionAveragePos = GetAveragePosition(collisionRisks);
-            dist = collisionAveragePos - this.transform.position;
-            newVelocity += dist * BoidSpawner.S.collisionAvoidanceAmt;
+            Vector3 averageCrashVec = GetAveragePosition(crashRisks);
+            dist = averageCrashVec - this.transform.position;
+            newVelocity -= dist * BoidSpawner.S.crashAvoidanceAmt;
         }
 
-        dist = BoidSpawner.S.master.transform.position - this.transform.position;
-
-
-        newVelocity += dist.normalized;
+        // Aim at the player, if they're alive!!!!
+        if (BoidSpawner.S.master)
+        {
+            dist = BoidSpawner.S.master.transform.position - this.transform.position;
+            newVelocity += dist.normalized;
+        }
 
     }
 
     private void LateUpdate()
     {
+        // Update our boid's position based on the velocity we calculated
         velocity = (1 - BoidSpawner.S.velocityLerpAmt) * velocity + BoidSpawner.S.velocityLerpAmt * newVelocity;
 
         // Check if we're above max velocity
@@ -93,36 +97,59 @@ public class Boid : MonoBehaviour
             velocity = velocity.normalized * BoidSpawner.S.minVelocity;
 
         newPosition = this.transform.position + velocity * Time.deltaTime;
-
+        newPosition.y = 0.0f;
 
         this.transform.LookAt(newPosition);
 
-        this.transform.position = newPosition;
+        this.transform.position = newPosition; ;
+
     }
 
-    public List<Boid> GetNeighbors(Boid boi)
+    public List<Boid> Getneighbours(Boid boi)
     {
-        Vector3 delta;              
+        List<Boid> neighbours = new List<Boid>();
+
+        Vector3 delta;
         float dist;
 
-        float swarmRadius = 32.0f;
-
-        neighbors.Clear();    
+        neighbours.Clear();
 
         foreach (Boid b in boids)
         {
-            if (b == boi) // Skip if we're matching ourselves
+            if (b == boi || !b || !boi) // Skip if we're matching ourselves or dead
                 continue;
 
-            delta = b.transform.position - boi.transform.position; 
+            delta = b.transform.position - boi.transform.position;
             dist = delta.magnitude;
 
             if (dist < swarmRadius) // Are they in our radius
-                neighbors.Add(b);
+                neighbours.Add(b);
         }
+        //Debug.Log("Neighbours: "+neighbours.Count);
+        return (neighbours);
+    }
+    public List<Boid> GetCrashRisks(Boid boi)
+    {
+        List<Boid> crashRisks = new List<Boid>();
+        Vector3 delta;
+        float dist;
 
+        crashRisks.Clear();
 
-        return (neighbors);
+        foreach (Boid b in boids)
+        {
+            if (b == boi || !b || !boi) // Skip if we're matching ourselves or dead
+                continue;
+
+            delta = b.transform.position - boi.transform.position;
+            dist = delta.magnitude;
+
+            if (dist < crashRadius) // Are they in our radius
+                crashRisks.Add(b);
+        }
+        //Debug.Log("Crash Risks: " + crashRisks.Count);
+
+        return (crashRisks);
     }
 
 
@@ -130,18 +157,20 @@ public class Boid : MonoBehaviour
     {
         Vector3 sum = Vector3.zero;
         foreach (Boid b in someBoids)
-            sum += b.transform.position;
+            if (b) // Skip if dead
+                sum += b.transform.position;
         Vector3 center = sum / someBoids.Count;
 
         return (center);
     }
 
-   
+
     public Vector3 GetAverageVelocity(List<Boid> someBoids)
     {
         Vector3 sum = Vector3.zero;
         foreach (Boid b in someBoids)
-            sum += b.velocity;
+            if (b) // Skip if dead
+                sum += b.velocity;
         Vector3 avg = sum / someBoids.Count;
 
         return (avg);

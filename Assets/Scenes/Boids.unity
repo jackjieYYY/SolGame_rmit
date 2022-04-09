@@ -174,6 +174,18 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6017853717636381537, guid: a4958fc22629f8745adc772d23ff6cf8, type: 3}
+      propertyPath: weaponType1
+      value: 
+      objectReference: {fileID: 2611988723968014834, guid: caa65448b7b3d3142a5cfde03fa63764, type: 3}
+    - target: {fileID: 6017853717636381537, guid: a4958fc22629f8745adc772d23ff6cf8, type: 3}
+      propertyPath: weaponType2
+      value: 
+      objectReference: {fileID: 2611988723968014834, guid: 322f29f7fcbfd034495caeb769a12135, type: 3}
+    - target: {fileID: 6017853717636381537, guid: a4958fc22629f8745adc772d23ff6cf8, type: 3}
+      propertyPath: weaponType3
+      value: 
+      objectReference: {fileID: 2611988723968014834, guid: fbc1a1880d5f2384caf1a64879bd843c, type: 3}
     - target: {fileID: 6017853717636381541, guid: a4958fc22629f8745adc772d23ff6cf8, type: 3}
       propertyPath: m_Name
       value: Player
@@ -189,6 +201,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 688313555}
+  - component: {fileID: 688313556}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -210,6 +223,32 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &688313556
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 688313554}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 544531d58d4bb7c43b1096c98041278f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  numBoids: 100
+  boidPrefab: {fileID: 7871596825745128649, guid: 266fd2595006d184bbc9d0ff621194c1, type: 3}
+  master: {fileID: 1153351357}
+  spawnRadius: 50
+  spawnVelcoty: 1
+  minVelocity: 0
+  maxVelocity: 2
+  crashRadius: 2
+  swarmRadius: 32
+  randomAmt: 0.1
+  velocityMatchingAmt: 0.15
+  flockCenteringAmt: 0.12
+  crashAvoidanceAmt: 1.5
+  velocityLerpAmt: 0.05
 --- !u!1 &1153351357 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 6017853717636381541, guid: a4958fc22629f8745adc772d23ff6cf8, type: 3}
@@ -226,7 +265,6 @@ GameObject:
   - component: {fileID: 1595013420}
   - component: {fileID: 1595013419}
   - component: {fileID: 1595013418}
-  - component: {fileID: 1595013421}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -299,36 +337,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
---- !u!114 &1595013421
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1595013417}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 544531d58d4bb7c43b1096c98041278f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  numBoids: 100
-  boidPrefab: {fileID: 7871596825745128649, guid: 266fd2595006d184bbc9d0ff621194c1, type: 3}
-  master: {fileID: 1153351357}
-  spawnRadius: 100
-  spawnVelcoty: 1
-  minVelocity: 0
-  maxVelocity: 2
-  nearDist: 30
-  collisionDist: 5
-  velocityMatchingAmt: 0.01
-  flockCenteringAmt: 0.15
-  collisionAvoidanceAmt: -0.5
-  mouseAtrractionAmt: 0.01
-  mouseAvoidanceAmt: 0.75
-  mouseAvoiddanceDsit: 15
-  velocityLerpAmt: 0.25
-  ______________: 0
-  mousePos: {x: 0, y: 0, z: 0}
 --- !u!1 &1725681031
 GameObject:
   m_ObjectHideFlags: 0
