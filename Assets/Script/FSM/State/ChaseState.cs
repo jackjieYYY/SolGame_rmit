@@ -18,7 +18,7 @@ public class ChaseState : IState
     float speed = 0.01f;
     private float nextFindPathTime;
     private float FindPathTimeRate = 1f;
-    private float maxForce =  20f, maxSpeed = 20f, slowingRadius = 0.5f, drag = 4f;
+    private float maxForce =  20f, maxSpeed = 20f, slowingRadius = 0.5f, drag = 2f;
     private float pathRadius = 0.001f, futureAhead = 0.25f, avoidanceDistance = 3f, avoidanceWidth = 2f;
     private int currentPath = 0;
     public ChaseState(FSM fsm,GameObject _gameObject)
@@ -56,12 +56,11 @@ public class ChaseState : IState
             {
                 TryGetPath(player.GetComponent<Transform>().position);
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                Debug.Log("Error on Paht Finder");
+                Debug.LogError("Error on Paht Finder: " + e);
             }
         }
-
 
         if (path != null)
         {
@@ -163,8 +162,8 @@ public class ChaseState : IState
                 //If want obstacle avoidance, uncomment this.
                 // m_Rigidbody.AddForce(obstacleAvoidance());
             }
-            Vector3 targetDir = target - m_Rigidbody.position;
-            tf.rotation = Quaternion.Slerp(tf.rotation,  Quaternion.Euler(new Vector3(0f,Mathf.Atan2(targetDir.x, targetDir.z) * Mathf.Rad2Deg, 0f)), 0.1f);
+            // Vector3 targetDir = target - m_Rigidbody.position;
+            // tf.rotation = Quaternion.Slerp(tf.rotation,  Quaternion.Euler(new Vector3(0f,Mathf.Atan2(targetDir.x, targetDir.z) * Mathf.Rad2Deg, 0f)), 0.1f);
         }
     }
 
@@ -214,30 +213,6 @@ public class ChaseState : IState
         }
         
     }
-    // void FollowPath()
-    // {
-    //     if (path == null)
-    //         return;
-    //     if (path.Count == 0)
-    //         return;
-    //     Vector3 currentWayPoint = path[0];
-    //     m_GameObject.transform.position = Vector3.MoveTowards(m_GameObject.transform.position, currentWayPoint, speed);
-    //     if (m_GameObject.transform.position == currentWayPoint)
-    //     {
-    //         path.RemoveAt(0);
-    //     }
-    // }
-
-
-
-
-
-
-
-
-
-
-
 }
 
 

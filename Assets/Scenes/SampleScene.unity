@@ -1649,8 +1649,8 @@ GameObject:
   m_Component:
   - component: {fileID: 973890202}
   - component: {fileID: 973890201}
-  - component: {fileID: 973890203}
   - component: {fileID: 973890204}
+  - component: {fileID: 973890203}
   m_Layer: 3
   m_Name: Astar
   m_TagString: Untagged
@@ -1671,10 +1671,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   player: {fileID: 1966387058}
-  displayGridGizmos: 1
+  displayGridGizmos: 0
   unwalkableMask:
     serializedVersion: 2
     m_Bits: 64
+  asteroidFieldMask:
+    serializedVersion: 2
+    m_Bits: 128
   gridWorldSize: {x: 60, y: 40}
   nodeRadius: 0.5
 --- !u!4 &973890202
@@ -2777,7 +2780,6 @@ GameObject:
   - component: {fileID: 1738913547}
   - component: {fileID: 1738913546}
   - component: {fileID: 1738913545}
-  - component: {fileID: 1738913548}
   - component: {fileID: 1738913549}
   m_Layer: 0
   m_Name: MainCamera
@@ -2852,18 +2854,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 14
   m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
---- !u!114 &1738913548
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1738913544}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 60452381dcd75da49bc2300c1593b5ac, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &1738913549
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3366,7 +3356,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6017853717636381536, guid: a4958fc22629f8745adc772d23ff6cf8, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 2.72
+      value: 2.7
       objectReference: {fileID: 0}
     - target: {fileID: 6017853717636381536, guid: a4958fc22629f8745adc772d23ff6cf8, type: 3}
       propertyPath: m_LocalRotation.w
