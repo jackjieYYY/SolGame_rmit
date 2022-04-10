@@ -14,8 +14,12 @@ public class GameController : MonoBehaviour
     GameObject ship;
     public PlayerController shipController;
 
-    int maxDroid = 3;
+    private BoidSpawner boidSpawner;
+
+    int maxDroid = 1;
     float DroidSpeed = 0.01f;
+
+    int maxBoid = 2;
 
     int level = 1;
     public Vector3 spawnValue;
@@ -29,6 +33,12 @@ public class GameController : MonoBehaviour
     private bool isGameOver;
     public Text RestartText;
     private bool needRestart;
+
+    //random enemy spawn
+    private float barrierZTop = 5.20f;
+    private float barrierZBottom = -8.1f;
+    private float barrierXLeft = -7.4f;
+    private float barrierXRight = 11.5f;
 
     // Start is called before the first frame update
 
@@ -70,6 +80,9 @@ public class GameController : MonoBehaviour
 
         endPos = ship.transform.position;
         endState = false;
+
+        boidSpawner = GetComponent<BoidSpawner>();
+        boidSpawner.spawnBoids(2);
     }
 
     /// <summary>
@@ -86,11 +99,11 @@ public class GameController : MonoBehaviour
                 yield return null;
             }
             // raceA spawn
-            if (RaceADroidList.Count < maxDroid * 3)
+            if (RaceADroidList.Count < maxDroid)
             {
                 for (int i = 0; i < maxDroid; i++)
                 {
-                    Vector3 spawnPosition = new Vector3(Random.Range(-9, -6), 4, Random.Range(-5, 5));
+                    Vector3 spawnPosition = new Vector3(Random.Range(barrierXLeft, barrierXRight), 4, Random.Range(barrierZTop, barrierZBottom));
                     var raceA = Instantiate(RaceADroid, spawnPosition, Quaternion.identity);
                     RaceADroidList.Add(raceA.gameObject);
                 }
@@ -98,11 +111,13 @@ public class GameController : MonoBehaviour
             // raceB spawn
             if (RaceBDroidList.Count < maxDroid)
             {
-                Vector3 spawnPosition = new Vector3(Random.Range(6, 9), 4, Random.Range(-3, -5));
+                Vector3 spawnPosition = new Vector3(Random.Range(barrierXLeft, barrierXRight), 4, Random.Range(barrierZTop, barrierZBottom));
                 var raceB = Instantiate(RaceBDroid, spawnPosition, Quaternion.identity);
                 RaceBDroidList.Add(raceB.gameObject);
-
             }
+
+
+
             yield return new WaitForSeconds(Random.Range(2, maxSpawnWaitTime));
         }
 
@@ -209,6 +224,12 @@ public class GameController : MonoBehaviour
         updateScore();
     }
 
+    public void removeScore(int value)
+    {
+        score -= value;
+        updateScore();
+    }
+
     public void gameTimeUpdate()
     {
         if (isGameOver)
@@ -231,11 +252,13 @@ public class GameController : MonoBehaviour
     {
         if (isGameOver)
             return;
-        if (score > level * 5)
+        if (score > level * 10)
         {
             level++;
             maxDroid++;
-            DroidSpeed = DroidSpeed;
+            //DroidSpeed = DroidSpeed;
+            // Boid spawn
+            boidSpawner.spawnBoids(level / 2);
         }
     }
 
