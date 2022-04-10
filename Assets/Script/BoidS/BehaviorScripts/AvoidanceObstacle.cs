@@ -1,30 +1,22 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
-public class boidTest : MonoBehaviour
+[CreateAssetMenu(menuName = "Boid/Behavior/AvoidanceObstacle")]
+public class AvoidanceObstacle : BoidsBehavior
 {
-
-    // 方向数组是静态的，只需要初始化一次，所有单元共享
-    private static Vector3[] m_ObstanceRayDirection = null;
-
-    Vector3 velocity;
-    Vector3 newVelocity;
-    Vector3 newPostion;
-
-
-
-    private void Awake()
+    static Vector3[] m_ObstanceRayDirection = null;
+    public AvoidanceObstacle()
     {
         setObstanceRayDirection();
     }
 
-
-    // Start is called before the first frame update
-    void Start()
+    public override Vector3 CalMove(BoidManager manager, List<Transform> context, BoidSpawnerTest BoidSpawner)
     {
-
+        // if no neighbors, return no adjustment
+        return CheckObstances(manager);
     }
+
+
 
     void setObstanceRayDirection()
     {
@@ -50,37 +42,32 @@ public class boidTest : MonoBehaviour
     }
 
 
-    // Update is called once per frame
-    void Update()
+    Vector3 CheckObstances(BoidManager manager)
     {
-    }
 
-    public Vector3 CheckObstances(out bool isObstances)
-    {
-        isObstances= false;
-        Vector3 bestDir = transform.forward;
+        Vector3 bestDir = manager.transform.forward;
         int count = 0;
         float maxDis = 0;
 
         foreach (var dir in m_ObstanceRayDirection)
         {
-            Vector3 tdir = transform.TransformDirection(dir);
-            var ray = new Ray(transform.position, transform.TransformDirection(dir));
-            Debug.DrawRay(transform.position, transform.TransformDirection(dir), Color.blue, 1f);
-            var result = Physics.RaycastAll(ray, 3f);
+            Vector3 tdir = manager.transform.TransformDirection(dir);
+            var ray = new Ray(manager.transform.position, manager.transform.TransformDirection(dir));
+            Debug.DrawRay(manager.transform.position, manager.transform.TransformDirection(dir), Color.blue, 1f);
+            var result = Physics.RaycastAll(ray, 5f);
             if (result.Length != 0)
             {
-                count++;
                 foreach (RaycastHit raycastHit in result)
                 {
-                    if(raycastHit.transform.gameObject.name == "Boid(Clone)")
+                    if (raycastHit.transform.gameObject.name.Contains("Boid"))
                     {
                         continue;
                     }
                     float dis = raycastHit.distance;
-                    Debug.DrawRay(transform.position, tdir, Color.red, 1f);
+                    Debug.DrawRay(manager.transform.position, tdir, Color.red, 1f);
                     if (dis > maxDis)
                     {
+                        count++;
                         bestDir = tdir;
                         maxDis = dis;
                     }
@@ -91,20 +78,20 @@ public class boidTest : MonoBehaviour
             {
                 if (count == 0)
                 {
-                    Debug.DrawRay(transform.position, bestDir, Color.yellow, 1f);
-                    isObstances = false;
-                    return bestDir;
+                    Debug.DrawRay(manager.transform.position, bestDir, Color.yellow, 1f);
+                    return Vector3.zero;
                 }
- 
+
                 else
                 {
-                    Debug.DrawRay(transform.position, tdir, Color.yellow, 1f);
-                    isObstances = true;
+                    Debug.DrawRay(manager.transform.position, tdir, Color.yellow, 1f);
                     return tdir;
                 }
             }
         }
-        Debug.DrawRay(transform.position, bestDir, Color.green, 1f);
-        return bestDir;
+        Debug.DrawRay(manager.transform.position, bestDir, Color.green, 1f);
+        return Vector3.zero;
     }
+
+
 }
