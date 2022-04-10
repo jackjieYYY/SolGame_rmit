@@ -597,7 +597,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!64 &429292630
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -2345,6 +2345,7 @@ MonoBehaviour:
   gameLevel: {fileID: 687167409}
   healthText: {fileID: 2067560765}
   invincibilityText: {fileID: 2056028718}
+  youLose: {fileID: 0}
 --- !u!114 &1487670326
 MonoBehaviour:
   m_ObjectHideFlags: 0

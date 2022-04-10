@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class GameController : MonoBehaviour
 {
@@ -19,6 +20,10 @@ public class GameController : MonoBehaviour
     public Vector3 spawnValue;
     int maxSpawnWaitTime = 5;
 
+    //end state variables
+    private Vector3 endPos;
+    private bool endState;
+
     // Start is called before the first frame update
 
     //-------------------UIsetting start --------------------
@@ -29,6 +34,7 @@ public class GameController : MonoBehaviour
     public Text gameLevel;
     public Text healthText;
     public Text invincibilityText;
+    public Text youLose;
     int hour;
     int minute;
     int second;
@@ -51,7 +57,9 @@ public class GameController : MonoBehaviour
         {
             shipController = ship.GetComponent<PlayerController>();
         }
-            
+
+        endPos = ship.transform.position;
+        endState = false;
     }
 
     /// <summary>
@@ -104,6 +112,39 @@ public class GameController : MonoBehaviour
         LevelUpdate();
         HealthUpdate();
         InvincibilityUpdate();
+        CheckEndState();
+    }
+
+    //end state checker
+    void CheckEndState()
+    {
+        //check if ship is alive
+        GameObject shipCheck = GameObject.Find("Player");
+
+        if (shipCheck == null)
+        {
+            endState = true;
+        }
+        //if the ship is alive, update the end location with ship location
+        else
+        {
+            endPos = shipCheck.transform.position;
+        }
+
+        if(endState)
+        {
+            youLose.gameObject.SetActive(true);
+            endState = false;
+            //Play sound?
+            Invoke("resetGame", 5);
+            Debug.Log("You lose!!!!");
+            
+        }
+    }
+
+    void resetGame()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 
     public void updateScore()
