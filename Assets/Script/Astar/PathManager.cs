@@ -49,7 +49,7 @@ namespace Assets.Script.Astar
                     currentPathRequest.callBack(result, true);
                 }
                 
-                instance.tryProcesNext();
+                instance.tryProcesNext(true);
             }
         }
 
