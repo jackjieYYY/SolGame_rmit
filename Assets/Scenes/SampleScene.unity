@@ -2267,6 +2267,7 @@ MonoBehaviour:
   gameLevel: {fileID: 687167409}
   healthText: {fileID: 2067560765}
   invincibilityText: {fileID: 2056028718}
+  youLose: {fileID: 0}
 --- !u!114 &1487670326
 MonoBehaviour:
   m_ObjectHideFlags: 0

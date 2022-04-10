@@ -203,6 +203,8 @@ public class PlayerController : MonoBehaviour
                 Invincible = true;
                 InvincibleTime = InvincibilityTimer;
                 Damage.Play();
+                var dieAnimationObject = MonoSub.Instantiate(deathExplosion, gameObject.transform.position, gameObject.transform.rotation);
+                AudioSource.PlayClipAtPoint(explosion, this.gameObject.transform.position);
             }
         }
         else
