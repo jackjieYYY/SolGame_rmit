@@ -82,7 +82,7 @@ public class GameController : MonoBehaviour
         endState = false;
 
         boidSpawner = GetComponent<BoidSpawner>();
-        boidSpawner.spawnBoids(2);
+        boidSpawner.spawnBoids(10);
     }
 
     /// <summary>
@@ -103,7 +103,7 @@ public class GameController : MonoBehaviour
             {
                 for (int i = 0; i < maxDroid; i++)
                 {
-                    Vector3 spawnPosition = new Vector3(Random.Range(barrierXLeft, barrierXRight), 4, Random.Range(barrierZTop, barrierZBottom));
+                    Vector3 spawnPosition = new Vector3(Random.Range(barrierXLeft, barrierXRight), 0, Random.Range(barrierZTop, barrierZBottom));
                     var raceA = Instantiate(RaceADroid, spawnPosition, Quaternion.identity);
                     RaceADroidList.Add(raceA.gameObject);
                 }
@@ -111,7 +111,7 @@ public class GameController : MonoBehaviour
             // raceB spawn
             if (RaceBDroidList.Count < maxDroid)
             {
-                Vector3 spawnPosition = new Vector3(Random.Range(barrierXLeft, barrierXRight), 4, Random.Range(barrierZTop, barrierZBottom));
+                Vector3 spawnPosition = new Vector3(Random.Range(barrierXLeft, barrierXRight), 0, Random.Range(barrierZTop, barrierZBottom));
                 var raceB = Instantiate(RaceBDroid, spawnPosition, Quaternion.identity);
                 RaceBDroidList.Add(raceB.gameObject);
             }
@@ -256,7 +256,7 @@ public class GameController : MonoBehaviour
         {
             level++;
             maxDroid++;
-            //DroidSpeed = DroidSpeed;
+            DroidSpeed = DroidSpeed;
             // Boid spawn
             boidSpawner.spawnBoids(level / 2);
         }
