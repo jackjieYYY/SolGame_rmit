@@ -16,6 +16,7 @@ public class PlayerController : MonoBehaviour
     public float fileRate;
 
     GameObject shot;
+    GameController gameController;
     int weapon;
     public GameObject weaponType1;
     public GameObject weaponType2;
@@ -72,6 +73,13 @@ public class PlayerController : MonoBehaviour
     {
         //Fetch the Rigidbody component you attach from your GameObject
         m_Rigidbody = GetComponent<Rigidbody>();
+
+        var _gameController = GameObject.Find("GameController");
+        if (_gameController != null)
+        {
+            gameController = _gameController.GetComponent<GameController>();
+        }
+
 
         //set the initial health of the ship
         currentHealth = Maximumhealth;
@@ -135,13 +143,12 @@ public class PlayerController : MonoBehaviour
     void FixedUpdate()
     {
 
-
         // Get our controller input and translate it to thrust / rotation           
         if ((Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow)) && acceleration < maxThrust)
-            acceleration += thrust;
+            acceleration -= thrust;
 
         if ((Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow)) && acceleration > -maxThrust)
-            acceleration -= thrust;
+            acceleration += thrust;
         
         if ((Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow)))
             angle -= rotationSpeed;
@@ -168,9 +175,15 @@ public class PlayerController : MonoBehaviour
         if (Health <= 0)
         {
             killShip();
-            //Destroy(collision.gameObject);
+            Destroy(gameObject);
         }
     }
+
+    private void OnDestroy()
+    {
+        gameController.GameOver();
+    }
+
 
     // Health related functions
     public void ChangeHealth(int amount)
@@ -229,7 +242,6 @@ public class PlayerController : MonoBehaviour
     {
         var dieAnimationObject = MonoSub.Instantiate(deathExplosion, gameObject.transform.position, gameObject.transform.rotation);
         AudioSource.PlayClipAtPoint(explosion, this.gameObject.transform.position);
-        Destroy(gameObject);
     }
 
     // Mouse firing related functions
@@ -266,7 +278,6 @@ public class PlayerController : MonoBehaviour
         newAudio.loop = loop;
         newAudio.playOnAwake = playAwake;
         newAudio.volume = vol;
-
         return newAudio;
     }
 

@@ -8,7 +8,6 @@ public class CameraMove : MonoBehaviour
     public Transform CameraTransform;
     public Transform BgTransform;
     public Transform StarField;
-    public bool PlayerAlive = true;
     [SerializeField] Vector3 offSet;
     [SerializeField] Vector3 BgOffSet;
     [SerializeField] Vector3 StarOffset;

@@ -81,7 +81,7 @@ public class RaceB_FSMController : MonoBehaviour
         //int damage
         //Check which weapon was used on the drone
 
-        Debug.Log("Triggered: " + collision);
+        //Debug.Log("Triggered: " + collision);
 
         // If ship is null, then the object is not the ship
         if (ship != null)
@@ -113,6 +113,13 @@ public class RaceB_FSMController : MonoBehaviour
             gameController.addScore(score);
             m_Fsm.TransitionState(StateType.Die);
         }
+    }
+
+    private void OnDestroy()
+    {
+        //AudioSource.PlayClipAtPoint(explosion, this.gameObject.transform.position);
+        gameController.addScore(score);
+        m_Fsm.TransitionState(StateType.Die);
     }
 
     int checkWeaponDamage(Collider collision)

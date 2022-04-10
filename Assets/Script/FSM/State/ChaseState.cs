@@ -11,16 +11,26 @@ public class ChaseState : IState
     private GameController gameController;
     GameObject player;
     GameObject m_GameObject;
+    Rigidbody m_Rigidbody;
     FSM m_FSM;
     List<Vector3> path;
+    Transform tf;
     float speed = 0.01f;
     private float nextFindPathTime;
     private float FindPathTimeRate = 1f;
-
+    private float maxForce =  20f, maxSpeed = 20f, slowingRadius = 0.5f, drag = 4f;
+    private float pathRadius = 0.001f, futureAhead = 0.25f, avoidanceDistance = 3f, avoidanceWidth = 2f;
+    private int currentPath = 0;
     public ChaseState(FSM fsm,GameObject _gameObject)
     {
         player = GameObject.Find("Player");
         m_GameObject = _gameObject;
+
+        m_Rigidbody = m_GameObject.GetComponent<Rigidbody>();
+
+        m_Rigidbody.drag = drag;
+        tf = m_GameObject.transform;
+
         m_FSM = fsm;
         var _gameController = GameObject.Find("GameController");
         if (_gameController != null)
@@ -56,7 +66,7 @@ public class ChaseState : IState
         if (path != null)
         {
             speed = gameController.getDroidSpeed();
-            FollowPath();
+            FollowPath(path);
         }
     }
     public void OnExit() //The method that should be executed to exit this state
@@ -68,7 +78,7 @@ public class ChaseState : IState
 
     void TryGetPath(Vector3 end)
     {
-        PathManager.Request(m_GameObject.transform.position, end, onPathFound);
+        PathManager.Request(m_GameObject.transform.position, end, true, onPathFound);
     }
 
     void onPathFound(List<Vector3> _path, bool pathSuccessful)
@@ -78,19 +88,145 @@ public class ChaseState : IState
             this.path = _path;
         }
     }
-    void FollowPath()
+    bool PointIsOnPath(Vector3 start, Vector3 end, Vector3 point)
     {
-        if (path == null)
-            return;
-        if (path.Count == 0)
-            return;
-        Vector3 currentWayPoint = path[0];
-        m_GameObject.transform.position = Vector3.MoveTowards(m_GameObject.transform.position, currentWayPoint, speed);
-        if (m_GameObject.transform.position == currentWayPoint)
+        return Vector3.Dot((end - start).normalized, (point - end).normalized) < 0f && Vector3.Dot((start - end).normalized, (point - start).normalized) < 0f;
+    }
+    public static Vector3 Seek(Vector3 target, Vector3 position, Vector3 currentVelocity, float maxSpeed, float maxForce)
+    {
+        Vector3 desiredVelocity = (target - position).normalized * maxSpeed;
+        Vector3 steering = Vector3.ClampMagnitude(desiredVelocity - currentVelocity, maxForce);
+        return steering;
+    }
+    public static Vector3 Arrive(Vector3 target, Vector3 position, Vector3 currentVelocity, float maxSpeed, float maxForce, float slowingRadius)
+    {
+        Vector3 desiredVelocity = (target - position);
+        float distance = desiredVelocity.magnitude;
+        if (distance < slowingRadius)
         {
-            path.RemoveAt(0);
+            desiredVelocity = desiredVelocity.normalized * maxSpeed * (distance/slowingRadius);
+        }
+        else
+        {
+            desiredVelocity = desiredVelocity.normalized * maxSpeed;
+        }
+        Vector3 steering = Vector3.ClampMagnitude(desiredVelocity - currentVelocity, maxForce);
+        return steering;
+    }
+
+    void FollowPath(List<Vector3> pathList)
+    {
+
+        if (pathList != null && pathList.Count != 0)
+        {
+            float worldRecord = 10000000000f;
+            Vector3 target = Vector3.zero;
+            
+            Vector3 futurePosition = m_Rigidbody.position + (m_Rigidbody.velocity.normalized * futureAhead);
+            for(int i = 0; i < pathList.Count-1;i++)
+            {
+                Vector3 start = pathList[i];
+                Vector3 end = pathList[i+1];
+                Vector3 normalPoint = FindTarget(start, end, futurePosition);
+                if (normalPoint.z < Mathf.Min(start.z, end.z) || normalPoint.z > Mathf.Max(start.z, end.z)) 
+                {
+                    normalPoint.z = end.z;
+                }
+                if (normalPoint.x < Mathf.Min(start.x, end.x) || normalPoint.x > Mathf.Max(start.x, end.x)) 
+                {
+                    normalPoint.x = end.x;
+                }
+
+                float distance = Vector3.Distance(futurePosition, normalPoint);
+                
+                if (distance < worldRecord) 
+                {
+                    worldRecord = distance;
+                    currentPath = i;
+                    Vector3 dir = (end - start).normalized * futureAhead;
+                    target = normalPoint + dir;
+                }
+
+
+            }
+            if(worldRecord > pathRadius)
+            {
+                if(currentPath == pathList.Count - 2)
+                {
+                    m_Rigidbody.AddForce(Arrive(target, m_Rigidbody.position, m_Rigidbody.velocity, maxSpeed, maxForce, slowingRadius));
+                    currentPath = 0;  
+                }
+                else
+                {
+                    m_Rigidbody.AddForce(Seek(target, m_Rigidbody.position, m_Rigidbody.velocity, maxSpeed, maxForce));     
+                }
+                //If want obstacle avoidance, uncomment this.
+                // m_Rigidbody.AddForce(obstacleAvoidance());
+            }
+            Vector3 targetDir = target - m_Rigidbody.position;
+            tf.rotation = Quaternion.Slerp(tf.rotation,  Quaternion.Euler(new Vector3(0f,Mathf.Atan2(targetDir.x, targetDir.z) * Mathf.Rad2Deg, 0f)), 0.1f);
         }
     }
+
+
+    Vector3 FindTarget(Vector3 start, Vector3 end, Vector3 futurePostion)
+    {
+        Vector3 startToFuturePos = futurePostion - start;
+        Vector3 pathDir = (end - start).normalized;
+        startToFuturePos.y = 0f;
+        pathDir.y = 0f;
+        float dotProducts = Vector3.Dot(startToFuturePos, pathDir);
+        pathDir *= dotProducts;
+        pathDir += start;
+        return pathDir;
+
+    }
+
+
+    Vector3 obstacleAvoidance()
+    {
+        float radius = 0.3f;
+        Vector3 bottomRight = m_Rigidbody.position + (tf.right * radius) + (-tf.forward * radius);
+        Vector3 bottomLeft = m_Rigidbody.position + (-tf.right * radius) + (-tf.forward * radius);
+        Vector3 topRight = m_Rigidbody.position + ((tf.right * radius * avoidanceWidth) + (tf.forward * avoidanceDistance));
+        Vector3 topLeft = m_Rigidbody.position + (-tf.right * radius* avoidanceWidth) + (tf.forward * avoidanceDistance);
+        // Debug.DrawRay(bottomRight, topRight - bottomRight, Color.green);
+        // Debug.DrawRay(bottomLeft, topLeft - bottomLeft, Color.green);
+        // Debug.DrawRay(bottomRight, bottomLeft - bottomRight, Color.green);
+        // Debug.DrawRay(topRight, topLeft - topRight, Color.green);
+        RaycastHit[] hits = new RaycastHit[2];
+        bool[] isHit = new bool[2];
+        isHit[0] = Physics.Raycast(bottomLeft, topLeft - bottomLeft, out hits[0], avoidanceDistance, LayerMask.GetMask("unwalkable"));
+        isHit[1] = Physics.Raycast(bottomRight, topRight - bottomRight, out hits[1], avoidanceDistance,  LayerMask.GetMask("unwalkable"));
+        // Debug.DrawLine(m_Rigidbody.position, hits[0].point, Color.green);
+        // Debug.DrawLine(m_Rigidbody.position, hits[1].point, Color.red);
+        int leftOrRight = isHit[0] ? 0 : isHit[1] ? 1 : -1;
+        if(leftOrRight != -1)
+        {
+            Vector3 dir = leftOrRight == 0 ? topRight : topLeft;
+            Vector3 steeringToAvoid = dir + m_Rigidbody.position - hits[leftOrRight].collider.transform.position;
+            steeringToAvoid *= Vector3.Distance(m_Rigidbody.position, hits[leftOrRight].collider.transform.position);
+            return Seek(steeringToAvoid,m_Rigidbody.position, m_Rigidbody.velocity, maxSpeed, maxForce);
+        }
+        else
+        {
+            return Vector3.zero;
+        }
+        
+    }
+    // void FollowPath()
+    // {
+    //     if (path == null)
+    //         return;
+    //     if (path.Count == 0)
+    //         return;
+    //     Vector3 currentWayPoint = path[0];
+    //     m_GameObject.transform.position = Vector3.MoveTowards(m_GameObject.transform.position, currentWayPoint, speed);
+    //     if (m_GameObject.transform.position == currentWayPoint)
+    //     {
+    //         path.RemoveAt(0);
+    //     }
+    // }
 
 
 

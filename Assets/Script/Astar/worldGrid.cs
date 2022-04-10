@@ -8,7 +8,7 @@ public class worldGrid : MonoBehaviour
 
     public bool displayGridGizmos;
 
-    public LayerMask unwalkableMask;
+    public LayerMask unwalkableMask, asteroidFieldMask;
     public Vector2 gridWorldSize;
     public float nodeRadius;
     float nodeDiameter;
@@ -38,6 +38,8 @@ public class worldGrid : MonoBehaviour
     // Start is called before the first frame update
     void Awake()
     {
+        unwalkableMask = LayerMask.GetMask("unwalkable");
+        asteroidFieldMask = LayerMask.GetMask("asteroidField");
         nodeDiameter = nodeRadius * 2;
         gridSizeX = Mathf.RoundToInt(gridWorldSize.x / nodeDiameter);
         gridSizeY = Mathf.RoundToInt(gridWorldSize.y / nodeDiameter);
@@ -89,6 +91,14 @@ public class worldGrid : MonoBehaviour
                 Vector3 worldPoint = worldBottemLeft + Vector3.right * (x * nodeDiameter + nodeRadius) + Vector3.forward * (y * nodeDiameter + nodeRadius);
                 bool walkable = !(Physics.CheckSphere(worldPoint, nodeRadius,unwalkableMask));
                 myGrid[x, y] = new Node(walkable, worldPoint,x,y);
+                if(Physics.CheckSphere(worldPoint, nodeRadius, asteroidFieldMask))
+                {
+                    myGrid[x, y].costMultiplier *= 2;
+                }
+                else if(Physics.CheckSphere(worldPoint, nodeRadius, unwalkableMask))
+                {
+                    myGrid[x, y].costMultiplier *= 3;
+                }
             }
         }
     }

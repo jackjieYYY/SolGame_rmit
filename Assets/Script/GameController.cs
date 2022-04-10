@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
@@ -18,13 +19,19 @@ public class GameController : MonoBehaviour
 
     int level = 1;
     public Vector3 spawnValue;
+
     int maxSpawnWaitTime = 5;
 
     //end state variables
     private Vector3 endPos;
     private bool endState;
+    public Text GameOverText;
+    private bool isGameOver;
+    public Text RestartText;
+    private bool needRestart;
 
     // Start is called before the first frame update
+
 
     //-------------------UIsetting start --------------------
 
@@ -42,13 +49,16 @@ public class GameController : MonoBehaviour
     
     // health of ship information
     int health;
-    
+
     //-------------------UIsetting end--------------------
 
 
 
     void Start()
     {
+        GameOverText.text = "";
+        isGameOver = false;
+        needRestart = false;
         // open a new Thread
         StartCoroutine(spawnDroid());
 
@@ -71,6 +81,10 @@ public class GameController : MonoBehaviour
 
         while (true)
         {
+            if (isGameOver)
+            {
+                yield return null;
+            }
             // raceA spawn
             if (RaceADroidList.Count < maxDroid * 3)
             {
@@ -107,6 +121,9 @@ public class GameController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        RestartCheck();
+        if (isGameOver)
+            return;
         gameTimeUpdate();
         gameLevelUpdate();
         LevelUpdate();
@@ -149,11 +166,15 @@ public class GameController : MonoBehaviour
 
     public void updateScore()
     {
+        if (isGameOver)
+            return;
         scoreText.text = string.Format("Score: {0}", score.ToString());
     }
 
     public void HealthUpdate()
     {
+        if (isGameOver)
+            return;
         if (GameObject.Find("Player") != null)
         {
             healthText.text = string.Format("Health: {0}", shipController.Health);
@@ -162,9 +183,23 @@ public class GameController : MonoBehaviour
     }
     public void InvincibilityUpdate()
     {
-        if(GameObject.Find("Player") != null)
+        if (isGameOver)
+            return;
+        if (GameObject.Find("Player") != null)
         {
             invincibilityText.text = string.Format("Invincible: {0}", shipController.Invincibility);
+        }
+    }
+
+    public void RestartCheck()
+    {
+        if (needRestart)
+        {
+            if (Input.GetKeyDown(KeyCode.Space))
+            {
+                //Application.LoadLevel(Application.loadedLevel);
+                SceneManager.LoadScene(0);
+            }
         }
     }
 
@@ -176,6 +211,8 @@ public class GameController : MonoBehaviour
 
     public void gameTimeUpdate()
     {
+        if (isGameOver)
+            return;
         timeSpend += Time.deltaTime;
         hour = (int)timeSpend / 3600;
         minute = ((int)timeSpend - hour * 3600) / 60;
@@ -185,11 +222,15 @@ public class GameController : MonoBehaviour
 
     public void gameLevelUpdate()
     {
+        if (isGameOver)
+            return;
         gameLevel.text = string.Format("Level: {0}", level.ToString());
     }
 
     public void LevelUpdate()
     {
+        if (isGameOver)
+            return;
         if (score > level * 5)
         {
             level++;
@@ -202,6 +243,19 @@ public class GameController : MonoBehaviour
     {
         return DroidSpeed;
     }
+    public bool IsGameOver()
+    {
+        return isGameOver;
+    }
+    public void GameOver()
+    {
+        isGameOver = true;
+        needRestart = true;
+        GameOverText.text = "Game Over";
+        RestartText.text = "Press Space to Restart";
+    }
+
+
 }
 
 

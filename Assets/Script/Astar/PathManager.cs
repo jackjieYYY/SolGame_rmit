@@ -23,21 +23,22 @@ namespace Assets.Script.Astar
             pathFinding = GetComponent<PathFinding>();
         }
 
-        public static void Request(Vector3 start, Vector3 end, Action<List<Vector3>, bool> callBack)
+        public static void Request(Vector3 start, Vector3 end, bool smootherPath, Action<List<Vector3>, bool> callBack)
         {
             var newPathRequest = new PathRequest(start, end, callBack);
             pathRequests.Enqueue(newPathRequest);
-            instance.tryProcesNext();
+            instance.tryProcesNext(smootherPath);
         }
 
-        void tryProcesNext()
+        void tryProcesNext(bool smootherPath)
         {
             if(!isProcessingPath && pathRequests.Count > 0)
             {
                 currentPathRequest = pathRequests.Dequeue();
                 isProcessingPath = true;
-                var result = pathFinding.findPath(currentPathRequest.start, currentPathRequest.end);
+                var result = pathFinding.findPath(currentPathRequest.start, currentPathRequest.end, smootherPath);
                 isProcessingPath = false;
+
                 currentPathRequest.callBack(result, result==null?false:true);
                 if (result == null)
                 {
@@ -48,7 +49,7 @@ namespace Assets.Script.Astar
                     currentPathRequest.callBack(result, true);
                 }
                 
-                instance.tryProcesNext();
+                instance.tryProcesNext(true);
             }
         }
 
