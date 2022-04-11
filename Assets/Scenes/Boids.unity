@@ -468,8 +468,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 688313555}
-  - component: {fileID: 688313556}
-  - component: {fileID: 688313557}
   - component: {fileID: 688313558}
   m_Layer: 0
   m_Name: GameController
@@ -492,51 +490,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &688313556
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 688313554}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 544531d58d4bb7c43b1096c98041278f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  numBoids: 100
-  boidPrefab: {fileID: 7871596825745128649, guid: 266fd2595006d184bbc9d0ff621194c1, type: 3}
-  master: {fileID: 0}
-  spawnRadius: 50
-  spawnVelcoty: 1
-  minVelocity: 0
-  maxVelocity: 2
-  crashRadius: 2
-  swarmRadius: 32
-  randomAmt: 0.1
-  velocityMatchingAmt: 0.15
-  flockCenteringAmt: 0.12
-  crashAvoidanceAmt: 1.5
-  velocityLerpAmt: 0.05
---- !u!114 &688313557
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 688313554}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6bd6a9869ae6c174c8b92425f4455525, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  boidManager: {fileID: 4946646145048369330, guid: 214dd35c72d9058498f469a19e5e25a9, type: 3}
-  boidsBehavior: {fileID: 11400000, guid: 2cac1e577de1c0a43a29e2dfdcd3d170, type: 2}
-  startingCount: 250
-  driveFactor: 10
-  maxSpeed: 5
-  neighborRadius: 1.5
-  avoidanceRadiusMultiplier: 2
 --- !u!114 &688313558
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -549,7 +502,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: db5cb053a726c1d4699756902b4837ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  boidPref: {fileID: 3976088582517816872, guid: db6a6b90fa4783c45bd64de8c52638a3, type: 3}
+  boidPref: {fileID: 5892995979193577986, guid: 8f2c131d1f1e88941b765a1fc293029b, type: 3}
   BoidsTargetObject: {fileID: 2058734874}
   startingCount: 500
   neighborRadius: 1
