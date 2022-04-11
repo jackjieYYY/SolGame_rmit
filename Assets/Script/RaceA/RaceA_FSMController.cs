@@ -29,7 +29,7 @@ public class RaceA_FSMController : MonoBehaviour
         randomRotator.setRotation(new Vector3(1, 1, 1), 1f);
 
         var enterState = new EnterState(m_Fsm, gameObject);
-        enterState.setLocalScale(new Vector3(0.2f, 0.2f, 0.2f));
+        enterState.setLocalScale(new Vector3(0.4f, 0.4f, 0.4f));
         m_Fsm.AddState(StateType.Enter,enterState);
 
         m_Fsm.AddState(StateType.SpawnAnimation, new SpawnAnimationState(m_Fsm, gameObject, spawnAnimation));
@@ -82,12 +82,8 @@ public class RaceA_FSMController : MonoBehaviour
         {
             ship.ChangeHealth(-1);
             //if the ship is on zero health, destroy it as well
-            if (ship.Health <= 0)
-            {
-                //create explosion
-                //ship.killShip();
-                //Destroy(collision.gameObject);
-            }
+            gameController.RaceADroid_Destory(gameObject);
+            Destroy(gameObject);
         }
         else
         {
@@ -95,6 +91,7 @@ public class RaceA_FSMController : MonoBehaviour
             //if the collision object is not the ship, it should be destroyed on contact
             if(collision.name == "PlayerBolt(Clone)" || collision.name == "PlayerBlast(Clone)")
             {
+
                 Destroy(collision.gameObject);
             }
             

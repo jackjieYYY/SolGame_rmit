@@ -23,7 +23,7 @@ public class Spanwer : MonoBehaviour
             while (true)
             {
                 count++;
-                var postion = new Vector3(Random.Range(-40, 40), 0, Random.Range(-40, 40));
+                var postion = new Vector3(Random.Range(-15, 15), 0, Random.Range(-15, 15));
                 if(count == 20)
                 {
                     return;

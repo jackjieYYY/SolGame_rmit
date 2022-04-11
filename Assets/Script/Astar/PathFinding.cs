@@ -85,7 +85,15 @@ public class PathFinding : MonoBehaviour
             pathList.Add(node.worldPostion);
         }
         if(smootherPath)
-            return GetSmootherPath(path);
+            try
+            {
+                return GetSmootherPath(path);
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+             
             // return SimplifyPath(path);
         else
             return pathList;

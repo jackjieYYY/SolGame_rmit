@@ -11,7 +11,7 @@ public class Boundary
 public class PlayerController : MonoBehaviour
 {
     Rigidbody m_Rigidbody;
-
+    Spanwer m_Spanwer;
     private float nextFile;
     public float fileRate;
 
@@ -119,6 +119,14 @@ public class PlayerController : MonoBehaviour
         }
 
         //Keyboard inputs
+        if (Input.GetKey(KeyCode.R) && gameController.canSaveSmallShip)
+        {
+            gameController.canSaveSmallShip = false;
+            m_Spanwer.isMoveForwarTarget = true;
+        }
+
+
+        //Keyboard inputs
         if (Input.GetKey(KeyCode.Space) && Time.time > nextFile)
         {
             nextFile = Time.time + fileRate;
@@ -145,10 +153,10 @@ public class PlayerController : MonoBehaviour
 
         // Get our controller input and translate it to thrust / rotation           
         if ((Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow)) && acceleration < maxThrust)
-            acceleration += thrust;
+            acceleration -= thrust;
 
         if ((Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow)) && acceleration > -maxThrust)
-            acceleration -= thrust;
+            acceleration += thrust;
         
         if ((Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow)))
             angle -= rotationSpeed;
@@ -177,6 +185,11 @@ public class PlayerController : MonoBehaviour
             killShip();
             Destroy(gameObject);
         }
+    }
+
+    public void setBoidsSpawner(Spanwer spanwer)
+    {
+        this.m_Spanwer = spanwer;
     }
 
     private void OnDestroy()
@@ -280,6 +293,15 @@ public class PlayerController : MonoBehaviour
         newAudio.volume = vol;
         return newAudio;
     }
+
+    void OnTriggerEnter(Collider other)
+    {
+        if (other.name.Contains("Boid") && m_Spanwer.isMoveForwarTarget)
+        {
+            Destroy(other.gameObject);
+        }
+    }
+
 
     private class MonoSub : MonoBehaviour
     {

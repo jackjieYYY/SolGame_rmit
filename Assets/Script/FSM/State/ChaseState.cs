@@ -48,9 +48,13 @@ public class ChaseState : IState
     }
     public void OnUpdate() //The method that should be executed to maintain this state
     {
-
+        if (gameController == null)
+        {
+            return;
+        }
         if (Time.time > nextFindPathTime)
         {
+
             nextFindPathTime = Time.time + FindPathTimeRate;
             try
             {
@@ -58,7 +62,6 @@ public class ChaseState : IState
             }
             catch (Exception e)
             {
-                Debug.LogError("Error on Paht Finder: " + e);
             }
         }
 
@@ -150,14 +153,19 @@ public class ChaseState : IState
             }
             if(worldRecord > pathRadius)
             {
-                if(currentPath == pathList.Count - 2)
+                m_GameObject.transform.LookAt(m_Rigidbody.velocity);
+                if (currentPath == pathList.Count - 2)
                 {
-                    m_Rigidbody.AddForce(Arrive(target, m_Rigidbody.position, m_Rigidbody.velocity, maxSpeed, maxForce, slowingRadius));
+                    var velocity = Arrive(target, m_Rigidbody.position, m_Rigidbody.velocity*0.1f, maxSpeed, maxForce, slowingRadius);
+                    m_GameObject.transform.LookAt(velocity);
+                    m_Rigidbody.AddForce(velocity);
                     currentPath = 0;  
                 }
                 else
                 {
-                    m_Rigidbody.AddForce(Seek(target, m_Rigidbody.position, m_Rigidbody.velocity, maxSpeed, maxForce));     
+                    var velocity = Seek(target, m_Rigidbody.position, m_Rigidbody.velocity*0.1f, maxSpeed, maxForce);
+                    m_GameObject.transform.LookAt(velocity);
+                    m_Rigidbody.AddForce(velocity);     
                 }
                 //If want obstacle avoidance, uncomment this.
                 // m_Rigidbody.AddForce(obstacleAvoidance());
