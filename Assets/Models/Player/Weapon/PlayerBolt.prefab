@@ -179,4 +179,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   hited: {fileID: 264289265482564331, guid: 1dc74dceede028d42bd9b429d49a09c9, type: 3}
-  speed: 1
+  speed: 6

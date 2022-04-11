@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 4517653455431242597}
   - component: {fileID: 1543736053557697860}
   - component: {fileID: 6061929344864530953}
+  - component: {fileID: 7199778855511283033}
   m_Layer: 0
   m_Name: RaceA_Droid
   m_TagString: enemy
@@ -92,10 +93,10 @@ BoxCollider:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8462523760814939029}
   m_Material: {fileID: 0}
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 2, y: 2, z: 2}
+  m_Size: {x: 1.3, y: 1.3, z: 1.3}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!54 &1543736053557697860
 Rigidbody:
@@ -127,3 +128,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   deathExplosion: {fileID: 8038344524183138613, guid: 0277167a12290af47801444830a2be97, type: 3}
   spawnAnimation: {fileID: 1459862227383078, guid: cc461484bcafc664fb68be84c1fc6860, type: 3}
+  HP: 2
+  explosion: {fileID: 8300000, guid: 654d1ed270c714ddb8c934ac5fef5edc, type: 3}
+  passiveNoise: {fileID: 8300000, guid: 7298cdd19e7244a4f9a880e0058b5c8c, type: 3}
+--- !u!64 &7199778855511283033
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8462523760814939029}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 4
+  m_Convex: 1
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 4300000, guid: 51133ebca86c2ad42a8acd5ba0f27df1, type: 3}
