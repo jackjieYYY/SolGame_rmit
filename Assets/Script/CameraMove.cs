@@ -14,7 +14,7 @@ public class CameraMove : MonoBehaviour
 
     private void Start()
     {
-        StarField.position = PlayerTransform.position + StarOffset;
+        // StarField.position = PlayerTransform.position + StarOffset;
         BgTransform.position = PlayerTransform.position + BgOffSet;
         
     }
