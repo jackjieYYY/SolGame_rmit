@@ -32,12 +32,7 @@ public class Composite : BoidsBehavior
 
                 move += partialMove;
             }
-
-
         }
         return move;
-
-
-
     }
 }

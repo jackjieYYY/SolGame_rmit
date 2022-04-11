@@ -85,14 +85,7 @@ public class BoidSpawnerTest : MonoBehaviour
             }
             context.Add(c.transform);
         }
-        if (context.Count > 0)
-        {
-            var color = Color.Lerp(Color.white,Color.red,context.Count/6f);
-            //Debug.DrawRay(manager.transform.position, manager.transform.TransformDirection(Vector3.forward), color, 1f);
-        }
-        return context;
-
-         
+        return context; 
     }
 
     bool CheckPostion(Vector3 postion)

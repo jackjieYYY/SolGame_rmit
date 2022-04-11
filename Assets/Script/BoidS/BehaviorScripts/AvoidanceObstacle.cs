@@ -38,7 +38,6 @@ public class AvoidanceObstacle : BoidsBehavior
             }
         }
         m_ObstanceRayDirection = dirs.ToArray();
-
     }
 
 
