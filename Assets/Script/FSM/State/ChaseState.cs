@@ -56,13 +56,18 @@ public class ChaseState : IState
         {
 
             nextFindPathTime = Time.time + FindPathTimeRate;
-            try
+            if(player == null)
             {
+<<<<<<< Updated upstream
                 TryGetPath(player.GetComponent<Transform>().position);
             }
             catch (Exception e)
             {
+=======
+                return;
+>>>>>>> Stashed changes
             }
+            TryGetPath(player.GetComponent<Transform>().position);
         }
 
         if (path != null)

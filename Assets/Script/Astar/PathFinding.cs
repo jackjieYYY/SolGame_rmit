@@ -91,9 +91,16 @@ public class PathFinding : MonoBehaviour
             }
             catch (Exception)
             {
+<<<<<<< Updated upstream
                 return null;
             }
              
+=======
+
+                return null;
+            }
+
+>>>>>>> Stashed changes
             // return SimplifyPath(path);
         else
             return pathList;

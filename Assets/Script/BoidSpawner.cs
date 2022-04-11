@@ -5,7 +5,6 @@ using UnityEngine;
 
 // This object will create all of our boids and allow for easily accessible / tweakable settings
 
-
 public class BoidSpawner : MonoBehaviour
 {
     static public BoidSpawner S;
@@ -36,10 +35,10 @@ public class BoidSpawner : MonoBehaviour
     void Start()
     {
         S = this;
-        
+        spawnBoids(20);
         //for (int i = 0; i < numBoids; i++)
-            //Instantiate(boidPrefab);
-        
+        //Instantiate(boidPrefab);
+
         //spawnBoids(numBoids);
     }
 

@@ -206,7 +206,7 @@ public class GameController : MonoBehaviour
 
     public void updateScore()
     {
-        if (isGameOver)
+        if (isGameOver || scoreText == null)
             return;
         scoreText.text = string.Format("Score: {0}", score.ToString());
     }
@@ -319,6 +319,10 @@ public class GameController : MonoBehaviour
     }
     public void GameOver()
     {
+        if (GameOverText == null || needRestart == null)
+        {
+            return;
+        }
         isGameOver = true;
         needRestart = true;
         GameOverText.text = "Game Over";
