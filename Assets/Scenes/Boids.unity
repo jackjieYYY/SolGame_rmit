@@ -504,9 +504,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   boidPref: {fileID: 5892995979193577986, guid: 8f2c131d1f1e88941b765a1fc293029b, type: 3}
   BoidsTargetObject: {fileID: 2058734874}
-  startingCount: 500
-  neighborRadius: 1
+  startingCount: 150
+  neighborRadius: 2
   isMoveForwarTarget: 0
+  minSpawnerX: -50
+  maxSpawnerX: 50
+  minSpawnerZ: -50
+  maxSpawnerZ: 50
 --- !u!1 &1100655836
 GameObject:
   m_ObjectHideFlags: 0

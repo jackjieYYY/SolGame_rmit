@@ -1309,13 +1309,41 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 487078302146420770, guid: 7aac070902c932546b0e428083d77e42, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 3001794788791838307, guid: 7aac070902c932546b0e428083d77e42, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 3084618013253148545, guid: 7aac070902c932546b0e428083d77e42, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
     - target: {fileID: 4310993808304938993, guid: 7aac070902c932546b0e428083d77e42, type: 3}
       propertyPath: m_Name
       value: Asteroid Field
       objectReference: {fileID: 0}
     - target: {fileID: 4310993808304938993, guid: 7aac070902c932546b0e428083d77e42, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 4310993808304938993, guid: 7aac070902c932546b0e428083d77e42, type: 3}
       propertyPath: m_IsActive
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4717306548144644180, guid: 7aac070902c932546b0e428083d77e42, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 5242895317860694402, guid: 7aac070902c932546b0e428083d77e42, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 5605787074876536077, guid: 7aac070902c932546b0e428083d77e42, type: 3}
+      propertyPath: m_Layer
+      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 6092445089223729696, guid: 7aac070902c932546b0e428083d77e42, type: 3}
       propertyPath: m_RootOrder
@@ -1360,6 +1388,14 @@ PrefabInstance:
     - target: {fileID: 6092445089223729696, guid: 7aac070902c932546b0e428083d77e42, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6838136090114329167, guid: 7aac070902c932546b0e428083d77e42, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 7387829864344019947, guid: 7aac070902c932546b0e428083d77e42, type: 3}
+      propertyPath: m_Layer
+      value: 7
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7aac070902c932546b0e428083d77e42, type: 3}
@@ -2638,6 +2674,10 @@ MonoBehaviour:
   startingCount: 100
   neighborRadius: 1
   isMoveForwarTarget: 0
+  minSpawnerX: -15
+  maxSpawnerX: 15
+  minSpawnerZ: -15
+  maxSpawnerZ: 15
 --- !u!114 &782836891
 MonoBehaviour:
   m_ObjectHideFlags: 0
