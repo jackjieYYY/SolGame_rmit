@@ -93,7 +93,7 @@ public class RaceA_FSMController : MonoBehaviour
         {
             Debug.Log(collision.name);
             //if the collision object is not the ship, it should be destroyed on contact
-            if(collision.name == "PlayerBolt(Clone)" || collision.name == "PlayerSwirl(Clone)" || collision.name == "PlayerBlast(Clone)")
+            if(collision.name == "PlayerBolt(Clone)" || collision.name == "PlayerBlast(Clone)")
             {
                 Destroy(collision.gameObject);
             }

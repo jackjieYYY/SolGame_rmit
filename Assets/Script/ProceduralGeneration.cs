@@ -111,7 +111,7 @@ public class ProceduralGeneration : MonoBehaviour
         weaponUpgrades.Add(weaponUpgrade3);
 
         //Call on awake so that other operations that rely on start can run successfully afterwards
-        SpawnMap();
+        //SpawnMap();
     }
 
     // Start is called before the first frame update
