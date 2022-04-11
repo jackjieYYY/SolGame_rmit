@@ -145,10 +145,10 @@ public class PlayerController : MonoBehaviour
 
         // Get our controller input and translate it to thrust / rotation           
         if ((Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow)) && acceleration < maxThrust)
-            acceleration -= thrust;
+            acceleration += thrust;
 
         if ((Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow)) && acceleration > -maxThrust)
-            acceleration += thrust;
+            acceleration -= thrust;
         
         if ((Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow)))
             angle -= rotationSpeed;
@@ -203,6 +203,8 @@ public class PlayerController : MonoBehaviour
                 Invincible = true;
                 InvincibleTime = InvincibilityTimer;
                 Damage.Play();
+                var dieAnimationObject = MonoSub.Instantiate(deathExplosion, gameObject.transform.position, gameObject.transform.rotation);
+                AudioSource.PlayClipAtPoint(explosion, this.gameObject.transform.position);
             }
         }
         else

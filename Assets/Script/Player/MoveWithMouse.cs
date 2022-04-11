@@ -8,21 +8,23 @@ public class MoveWithMouse : MonoBehaviour
 
     Rigidbody m_Rigidbody;
     float mouseAngle;
-    List<Vector3> path;
-    int targetIndex;
+    List<Vector3> path, path2;
     float speed = 0.01f;
 
-    float nextFile;
-    float fileRate = 0.5f;
+    float nextFire;
+    float fireRate = 0.5f;
 
-    [SerializeField] private float maxForce = 50f, maxSpeed = 50f;
-    [SerializeField] private float pathRadius = 1.0f, futureAhead = 0.5f;
-    private int currentPath = 0, transitPath = 0;
-    private bool inTransitState = false;
+    [SerializeField] private float maxForce =  20f, maxSpeed = 20f, slowingRadius = 0.5f, drag = 4f;
+    [SerializeField] private float pathRadius = 0.001f, futureAhead = 0.25f, avoidanceDistance = 3f, avoidanceWidth = 2f;
+    private int currentPath = 0;
+    Vector3 lastClickPosition, steering;
+
     // Start is called before the first frame update
     void Start()
     {
         m_Rigidbody = GetComponent<Rigidbody>();
+        m_Rigidbody.drag = this.drag;
+        lastClickPosition = m_Rigidbody.position;    
     }
 
     private void FixedUpdate()
@@ -30,29 +32,79 @@ public class MoveWithMouse : MonoBehaviour
         //The screen is oriented vertically upward is 0 degrees this.mouseAngle
         getMouseAngle();
         m_Rigidbody.rotation = Quaternion.Euler(0f, this.mouseAngle, 0f);
-
-        if (Input.GetButton("Fire2") && Time.time > nextFile)
+        if (Input.GetButton("Fire2") && Time.time > nextFire)
         {
-            nextFile = Time.time + fileRate;
+            nextFire = Time.time + fireRate;
             var posX = Input.mousePosition.x;
             var posY = Input.mousePosition.y;
             var worldPos = Camera.main.ScreenToWorldPoint(new Vector3(posX, posY, 10));
             worldPos.y = 0f;
-            TryGetPath(worldPos);
-        }
+            TryGetPath(worldPos); 
+            lastClickPosition = worldPos;
 
-        //FollowPath();// this is  original method.
-        FollowPath();// this is new one with AddForce. But need to Fix.
+        }
+        try
+        {
+            for(int i = 0; i < path.Count - 1; i++)
+            {
+                Debug.DrawLine(path[i], path[i+1], Color.cyan);
+            }
+            for(int i = 0; i < path2.Count - 1; i++)
+            {
+                Debug.DrawLine(path2[i], path2[i+1], Color.white);
+            }
+        }
+        catch
+        {
+
+        }
+        Vector3 targetDir = lastClickPosition - m_Rigidbody.position;
+        transform.rotation = Quaternion.Slerp(transform.rotation,  Quaternion.Euler(new Vector3(0f,Mathf.Atan2(targetDir.x, targetDir.z) * Mathf.Rad2Deg, 0f)), 0.1f);
+        // steering = Seek(lastClickPosition, m_Rigidbody.position, m_Rigidbody.velocity, maxSpeed, maxForce) + obstacleAvoidance();
+        // m_Rigidbody.AddForce(steering);
+        FollowPath(path);
     }
 
 
 
     void TryGetPath(Vector3 end)
     {
-        PathManager.Request(transform.position, end, onPathFound);
+        PathManager.Request(transform.position, end, true, onPathFound);
+        PathManager.Request(transform.position, end, false, onPathFound2);
+        currentPath = 0;
     }
 
-
+    Vector3 obstacleAvoidance()
+    {
+        float radius = 0.3f;
+        Vector3 bottomRight = m_Rigidbody.position + (transform.right * radius) + (-transform.forward * radius);
+        Vector3 bottomLeft = m_Rigidbody.position + (-transform.right * radius) + (-transform.forward * radius);
+        Vector3 topRight = m_Rigidbody.position + ((transform.right * radius * avoidanceWidth) + (transform.forward * avoidanceDistance));
+        Vector3 topLeft = m_Rigidbody.position + (-transform.right * radius* avoidanceWidth) + (transform.forward * avoidanceDistance);
+        Debug.DrawRay(bottomRight, topRight - bottomRight, Color.green);
+        Debug.DrawRay(bottomLeft, topLeft - bottomLeft, Color.green);
+        Debug.DrawRay(bottomRight, bottomLeft - bottomRight, Color.green);
+        Debug.DrawRay(topRight, topLeft - topRight, Color.green);
+        RaycastHit[] hits = new RaycastHit[2];
+        bool[] isHit = new bool[2];
+        isHit[0] = Physics.Raycast(bottomLeft, topLeft - bottomLeft, out hits[0], avoidanceDistance, LayerMask.GetMask("unwalkable"));
+        isHit[1] = Physics.Raycast(bottomRight, topRight - bottomRight, out hits[1], avoidanceDistance,  LayerMask.GetMask("unwalkable"));
+        // Debug.DrawLine(m_Rigidbody.position, hits[0].point, Color.green);
+        // Debug.DrawLine(m_Rigidbody.position, hits[1].point, Color.red);
+        int leftOrRight = isHit[0] ? 0 : isHit[1] ? 1 : -1;
+        if(leftOrRight != -1)
+        {
+            Vector3 dir = leftOrRight == 0 ? topRight : topLeft;
+            Vector3 steeringToAvoid = dir + m_Rigidbody.position - hits[leftOrRight].collider.transform.position;
+            steeringToAvoid *= Vector3.Distance(m_Rigidbody.position, hits[leftOrRight].collider.transform.position);
+            return Seek(steeringToAvoid,m_Rigidbody.position, m_Rigidbody.velocity, maxSpeed, maxForce);
+        }
+        else
+        {
+            return Vector3.zero;
+        }
+        
+    }
     void onPathFound(List<Vector3> _path, bool pathSuccessful)
     {
         if (pathSuccessful)
@@ -60,71 +112,105 @@ public class MoveWithMouse : MonoBehaviour
             this.path = _path;
         }
     }
+    void onPathFound2(List<Vector3> _path, bool pathSuccessful)
+    {
+        if (pathSuccessful)
+        {
+            this.path2 = _path;
+        }
+    }
     bool PointIsOnPath(Vector3 start, Vector3 end, Vector3 point)
     {
         return Vector3.Dot((end - start).normalized, (point - end).normalized) < 0f && Vector3.Dot((start - end).normalized, (point - start).normalized) < 0f;
     }
-    public static Vector3 Seek(Vector3 target, Vector3 position, Vector3 currentVelocity, float maxSpeed)
+    public static Vector3 Seek(Vector3 target, Vector3 position, Vector3 currentVelocity, float maxSpeed, float maxForce)
     {
         Vector3 desiredVelocity = (target - position).normalized * maxSpeed;
-        Vector3 steering = desiredVelocity - currentVelocity;
+        Vector3 steering = Vector3.ClampMagnitude(desiredVelocity - currentVelocity, maxForce);
+        return steering;
+    }
+    public static Vector3 Arrive(Vector3 target, Vector3 position, Vector3 currentVelocity, float maxSpeed, float maxForce, float slowingRadius)
+    {
+        Vector3 desiredVelocity = (target - position);
+        float distance = desiredVelocity.magnitude;
+        if (distance < slowingRadius)
+        {
+            desiredVelocity = desiredVelocity.normalized * maxSpeed * (distance/slowingRadius);
+        }
+        else
+        {
+            desiredVelocity = desiredVelocity.normalized * maxSpeed;
+        }
+        Vector3 steering = Vector3.ClampMagnitude(desiredVelocity - currentVelocity, maxForce);
         return steering;
     }
 
     void FollowPath(List<Vector3> pathList)
     {
-        if (pathList != null && transitPath < pathList.Count - 1)
+
+        if (pathList != null && pathList.Count != 0)
         {
-            Vector3 futurePosition = m_Rigidbody.position + m_Rigidbody.velocity * futureAhead;
-            Debug.DrawLine(m_Rigidbody.position, futurePosition, Color.red);
-            Vector3 target = FindTarget(pathList[currentPath], pathList[currentPath + 1], futurePosition);
-            Debug.DrawLine(m_Rigidbody.position, target, Color.green);
-            float distance = Vector3.Distance(futurePosition, target);
-            if (PointIsOnPath(pathList[currentPath], pathList[currentPath + 1], target))
+            float worldRecord = 10000000000f;
+            Vector3 target = Vector3.zero;
+            
+            Vector3 futurePosition = m_Rigidbody.position + (m_Rigidbody.velocity.normalized * futureAhead);
+            for(int i = 0; i < pathList.Count-1;i++)
             {
-                Vector3 steering = Vector3.zero;
-                if (distance > pathRadius)
+                Vector3 start = pathList[i];
+                Vector3 end = pathList[i+1];
+                Vector3 normalPoint = FindTarget(start, end, futurePosition);
+                if (normalPoint.z < Mathf.Min(start.z, end.z) || normalPoint.z > Mathf.Max(start.z, end.z)) 
                 {
-                    steering = Seek(target, m_Rigidbody.position, m_Rigidbody.velocity, maxSpeed);
+                    normalPoint.z = end.z;
                 }
-                m_Rigidbody.AddForce(steering);
-                m_Rigidbody.velocity = Vector3.ClampMagnitude(m_Rigidbody.velocity, maxForce);
+                if (normalPoint.x < Mathf.Min(start.x, end.x) || normalPoint.x > Mathf.Max(start.x, end.x)) 
+                {
+                    normalPoint.x = end.x;
+                }
+
+                float distance = Vector3.Distance(futurePosition, normalPoint);
+                
+                if (distance < worldRecord) 
+                {
+                    worldRecord = distance;
+                    currentPath = i;
+                    Vector3 dir = (end - start).normalized * futureAhead;
+                    target = normalPoint + dir;
+                }
+
 
             }
-            else if (!PointIsOnPath(pathList[currentPath], pathList[currentPath + 1], target) && transitPath < pathList.Count - 1)
+            if(worldRecord > pathRadius)
             {
-                transitPath = !inTransitState ? transitPath + 1 : transitPath;
-                if (transitPath >= pathList.Count - 1)
+                if(currentPath == pathList.Count - 2)
                 {
-                    return;
+                    m_Rigidbody.AddForce(Arrive(target, m_Rigidbody.position, m_Rigidbody.velocity, maxSpeed, maxForce, slowingRadius));
+                    currentPath = 0;  
                 }
-                inTransitState = true;
-                Vector3 steering = Vector3.zero;
-                steering = Seek(pathList[transitPath + 1], m_Rigidbody.position, m_Rigidbody.velocity, maxSpeed);
-                m_Rigidbody.AddForce(steering);
-                m_Rigidbody.velocity = Vector3.ClampMagnitude(m_Rigidbody.velocity, maxForce);
-                Vector3 newTarget = FindTarget(pathList[transitPath], pathList[transitPath + 1], futurePosition);
-                if (PointIsOnPath(pathList[transitPath], pathList[transitPath + 1], newTarget))
+                else
                 {
-                    inTransitState = false;
-                    currentPath++;
+                    m_Rigidbody.AddForce(Seek(target, m_Rigidbody.position, m_Rigidbody.velocity, maxSpeed, maxForce));     
                 }
+                m_Rigidbody.AddForce(obstacleAvoidance());
             }
+            Vector3 targetDir = target - m_Rigidbody.position;
+            transform.rotation = Quaternion.Slerp(transform.rotation,  Quaternion.Euler(new Vector3(0f,Mathf.Atan2(targetDir.x, targetDir.z) * Mathf.Rad2Deg, 0f)), 0.1f);
         }
     }
 
 
     Vector3 FindTarget(Vector3 start, Vector3 end, Vector3 futurePostion)
     {
-        Vector3 v1 = futurePostion - start;
-        Vector3 v2 = (end - start).normalized;
-        float dotProducts = Vector2.Dot(new Vector2(v1.x, v1.z), new Vector2(v2.x, v2.z));
-        v2 *= dotProducts;
-        v2 += start;
-        return v2;
+        Vector3 startToFuturePos = futurePostion - start;
+        Vector3 pathDir = (end - start).normalized;
+        startToFuturePos.y = 0f;
+        pathDir.y = 0f;
+        float dotProducts = Vector3.Dot(startToFuturePos, pathDir);
+        pathDir *= dotProducts;
+        pathDir += start;
+        return pathDir;
+
     }
-
-
 
 
     void FollowPath()
@@ -134,7 +220,6 @@ public class MoveWithMouse : MonoBehaviour
         if (path.Count == 0)
             return;
         Vector3 currentWayPoint = path[0];
-        transform.position = Vector3.MoveTowards(transform.position, currentWayPoint, speed);
         if (transform.position == currentWayPoint)
         {
             path.RemoveAt(0);
@@ -149,25 +234,27 @@ public class MoveWithMouse : MonoBehaviour
         mousePos.y = mousePos.y - objectPos.y;
         this.mouseAngle = Mathf.Atan2(mousePos.x, mousePos.y) * Mathf.Rad2Deg;
     }
-    void OnDrawGizmos()
-    {
-        if (path != null)
-        {
-            for (int i = targetIndex; i < path.Count; i++)
-            {
-                Gizmos.color = Color.black;
-                Gizmos.DrawCube(path[i], Vector3.one * 0.1f);
-                if (i == targetIndex)
-                {
-                    Gizmos.DrawLine(transform.position, path[i]);
-                }
-                else
-                {
-                    Gizmos.DrawLine(path[i - 1], path[i]);
-                }
-            }
-        }
-    }
+
+
+    // void OnDrawGizmos()
+    // {
+    //     if (path != null)
+    //     {
+    //         for (int i = targetIndex; i < path.Count; i++)
+    //         {
+    //             Gizmos.color = Color.black;
+    //             Gizmos.DrawCube(path[i], Vector3.one * 0.1f);
+    //             if (i == targetIndex)
+    //             {
+    //                 Gizmos.DrawLine(transform.position, path[i]);
+    //             }
+    //             else
+    //             {
+    //                 Gizmos.DrawLine(path[i - 1], path[i]);
+    //             }
+    //         }
+    //     }
+    // }
 
 
 

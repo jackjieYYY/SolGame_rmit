@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class GameController : MonoBehaviour
 {
@@ -13,17 +14,31 @@ public class GameController : MonoBehaviour
     GameObject ship;
     public PlayerController shipController;
 
-    int maxDroid = 3;
+    private BoidSpawner boidSpawner;
+
+    int maxDroid = 1;
     float DroidSpeed = 0.01f;
+
+    int maxBoid = 2;
 
     int level = 1;
     public Vector3 spawnValue;
+
     int maxSpawnWaitTime = 5;
 
+    //end state variables
+    private Vector3 endPos;
+    private bool endState;
     public Text GameOverText;
     private bool isGameOver;
     public Text RestartText;
     private bool needRestart;
+
+    //random enemy spawn
+    private float barrierZTop = 5.20f;
+    private float barrierZBottom = -8.1f;
+    private float barrierXLeft = -7.4f;
+    private float barrierXRight = 11.5f;
 
     // Start is called before the first frame update
 
@@ -36,6 +51,7 @@ public class GameController : MonoBehaviour
     public Text gameLevel;
     public Text healthText;
     public Text invincibilityText;
+    public Text youLose;
     int hour;
     int minute;
     int second;
@@ -61,7 +77,12 @@ public class GameController : MonoBehaviour
         {
             shipController = ship.GetComponent<PlayerController>();
         }
-            
+
+        endPos = ship.transform.position;
+        endState = false;
+
+        boidSpawner = GetComponent<BoidSpawner>();
+        boidSpawner.spawnBoids(10);
     }
 
     /// <summary>
@@ -78,11 +99,11 @@ public class GameController : MonoBehaviour
                 yield return null;
             }
             // raceA spawn
-            if (RaceADroidList.Count < maxDroid * 3)
+            if (RaceADroidList.Count < maxDroid)
             {
                 for (int i = 0; i < maxDroid; i++)
                 {
-                    Vector3 spawnPosition = new Vector3(Random.Range(-9, -6), 4, Random.Range(-5, 5));
+                    Vector3 spawnPosition = new Vector3(Random.Range(barrierXLeft, barrierXRight), 0, Random.Range(barrierZTop, barrierZBottom));
                     var raceA = Instantiate(RaceADroid, spawnPosition, Quaternion.identity);
                     RaceADroidList.Add(raceA.gameObject);
                 }
@@ -90,11 +111,13 @@ public class GameController : MonoBehaviour
             // raceB spawn
             if (RaceBDroidList.Count < maxDroid)
             {
-                Vector3 spawnPosition = new Vector3(Random.Range(6, 9), 4, Random.Range(-3, -5));
+                Vector3 spawnPosition = new Vector3(Random.Range(barrierXLeft, barrierXRight), 0, Random.Range(barrierZTop, barrierZBottom));
                 var raceB = Instantiate(RaceBDroid, spawnPosition, Quaternion.identity);
                 RaceBDroidList.Add(raceB.gameObject);
-
             }
+
+
+
             yield return new WaitForSeconds(Random.Range(2, maxSpawnWaitTime));
         }
 
@@ -121,6 +144,39 @@ public class GameController : MonoBehaviour
         LevelUpdate();
         HealthUpdate();
         InvincibilityUpdate();
+        CheckEndState();
+    }
+
+    //end state checker
+    void CheckEndState()
+    {
+        //check if ship is alive
+        GameObject shipCheck = GameObject.Find("Player");
+
+        if (shipCheck == null)
+        {
+            endState = true;
+        }
+        //if the ship is alive, update the end location with ship location
+        else
+        {
+            endPos = shipCheck.transform.position;
+        }
+
+        if(endState)
+        {
+            youLose.gameObject.SetActive(true);
+            endState = false;
+            //Play sound?
+            Invoke("resetGame", 5);
+            Debug.Log("You lose!!!!");
+            
+        }
+    }
+
+    void resetGame()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 
     public void updateScore()
@@ -168,6 +224,12 @@ public class GameController : MonoBehaviour
         updateScore();
     }
 
+    public void removeScore(int value)
+    {
+        score -= value;
+        updateScore();
+    }
+
     public void gameTimeUpdate()
     {
         if (isGameOver)
@@ -190,11 +252,13 @@ public class GameController : MonoBehaviour
     {
         if (isGameOver)
             return;
-        if (score > level * 5)
+        if (score > level * 10)
         {
             level++;
             maxDroid++;
             DroidSpeed = DroidSpeed;
+            // Boid spawn
+            boidSpawner.spawnBoids(level / 2);
         }
     }
 
