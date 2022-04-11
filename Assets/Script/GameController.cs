@@ -185,7 +185,7 @@ public class GameController : MonoBehaviour
 
     void saveSmallShipCheck()
     {
-        if (canSaveSmallShip)
+        if (canSaveSmallShip && !spanwer.isMoveForwarTarget)
         {
             saveSmallShip.text = "Press R to save the smaller ship";
         }
