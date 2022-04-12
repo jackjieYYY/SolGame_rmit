@@ -86,13 +86,17 @@ public class RaceB_FSMController : MonoBehaviour
         // If ship is null, then the object is not the ship
         if (ship != null)
         {
-            ship.ChangeHealth(-1);
-            //if the ship is on zero health, destroy it as well
-            Destroy(gameObject);
+            if (!ship.Invincibility)
+            { 
+                ship.ChangeHealth(-1);
+                //if the ship is on zero health, destroy it as well
+                gameController.RaceBDroid_Destory(gameObject);
+                Destroy(gameObject);
+            }
         }
         else
         {
-            Debug.Log(collision.name);
+            //Debug.Log(collision.name);
             //if the collision object is not the ship, it should be destroyed on contact
             if(collision.name == "PlayerBolt(Clone)" || collision.name == "PlayerBlast(Clone)")
             {

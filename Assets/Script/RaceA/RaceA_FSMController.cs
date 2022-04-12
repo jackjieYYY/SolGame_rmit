@@ -80,10 +80,13 @@ public class RaceA_FSMController : MonoBehaviour
         // If ship is null, then the object is not the ship
         if (ship != null)
         {
-            ship.ChangeHealth(-1);
-            //if the ship is on zero health, destroy it as well
-            gameController.RaceADroid_Destory(gameObject);
-            Destroy(gameObject);
+            if (!ship.Invincibility)
+            {
+                ship.ChangeHealth(-1);
+                //if the ship is on zero health, destroy it as well
+                gameController.RaceADroid_Destory(gameObject);
+                Destroy(gameObject);
+            }
         }
         else
         {
