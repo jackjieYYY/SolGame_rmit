@@ -252,7 +252,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 100004, guid: 034e51e6d8986d04795f48b487231687, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 100008, guid: 034e51e6d8986d04795f48b487231687, type: 3}
       propertyPath: m_Layer
@@ -444,6 +444,10 @@ PrefabInstance:
     - target: {fileID: 1412742708598286, guid: 347040970b496ba4086308c48e34652b, type: 3}
       propertyPath: m_Name
       value: satelie
+      objectReference: {fileID: 0}
+    - target: {fileID: 1412742708598286, guid: 347040970b496ba4086308c48e34652b, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4874934499113314, guid: 347040970b496ba4086308c48e34652b, type: 3}
       propertyPath: m_RootOrder
@@ -784,7 +788,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 8300000, guid: d56127010b323174cb72b2f22ca3027f, type: 3}
   m_PlayOnAwake: 1
-  m_Volume: 0.134
+  m_Volume: 0.066
   m_Pitch: 1
   Loop: 1
   Mute: 0
@@ -1388,7 +1392,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4310993808304938993, guid: 7aac070902c932546b0e428083d77e42, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4717306548144644180, guid: 7aac070902c932546b0e428083d77e42, type: 3}
       propertyPath: m_Layer
@@ -2213,6 +2217,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: big ship
       objectReference: {fileID: 0}
+    - target: {fileID: 6312731695116010822, guid: d41b71dc1f55e3e429ff80b1f4a47e07, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d41b71dc1f55e3e429ff80b1f4a47e07, type: 3}
 --- !u!1001 &673433458
@@ -2236,7 +2244,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 149556, guid: 994a247482b814e56b6d52d738745948, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 428508, guid: 994a247482b814e56b6d52d738745948, type: 3}
       propertyPath: m_RootOrder
@@ -2705,7 +2713,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5396563416744544128, guid: 97748edb8f1a01242b48008cad80b31d, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8988947418518893971, guid: 97748edb8f1a01242b48008cad80b31d, type: 3}
       propertyPath: m_RootOrder
@@ -2764,6 +2772,7 @@ GameObject:
   - component: {fileID: 782836893}
   - component: {fileID: 782836890}
   - component: {fileID: 782836891}
+  - component: {fileID: 782836892}
   m_Layer: 0
   m_Name: GameController
   m_TagString: Untagged
@@ -2819,6 +2828,39 @@ MonoBehaviour:
   healthText: {fileID: 2067560765}
   invincibilityText: {fileID: 2056028718}
   youLose: {fileID: 0}
+--- !u!114 &782836892
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 782836889}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1540858cba8e1244a8c96f105c34604, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  topFence: {fileID: 1407207147}
+  bottomFence: {fileID: 1021176661}
+  leftFence: {fileID: 896663508}
+  rightFence: {fileID: 506800434}
+  planet1: {fileID: 1345651076695995216, guid: 642454a265967e1468360a08fc66db60, type: 3}
+  planet2: {fileID: 3889334168561990669, guid: 01613cb038ee177459c00820f1ea9206, type: 3}
+  planet3: {fileID: 5331585953082624635, guid: 28597c4c2f7e32d498c4f34ff6d3d9e7, type: 3}
+  bigShip: {fileID: 6312731695116010822, guid: d41b71dc1f55e3e429ff80b1f4a47e07, type: 3}
+  satelite: {fileID: 1412742708598286, guid: 347040970b496ba4086308c48e34652b, type: 3}
+  asteroidField: {fileID: 4310993808304938993, guid: 7aac070902c932546b0e428083d77e42, type: 3}
+  healthUpgrade: {fileID: 100008, guid: aaf860cd8993a6c4b984c97449417579, type: 3}
+  majorHealthUpgrade: {fileID: 100008, guid: 879451a5e2214f143a7edf5dd3e32020, type: 3}
+  weaponUpgrade1: {fileID: 100004, guid: 034e51e6d8986d04795f48b487231687, type: 3}
+  weaponUpgrade2: {fileID: 100006, guid: 339ec13e94b70ca469275f6f7e29bac3, type: 3}
+  weaponUpgrade3: {fileID: 100006, guid: 3ac3af0756bb3654690122060f9cef08, type: 3}
+  emptySpace: 60
+  planetSpawn: 15
+  shipSpawn: 5
+  asteroidSpawn: 5
+  sateliteSpawn: 5
+  powerupSpawn: 10
 --- !u!4 &782836893
 Transform:
   m_ObjectHideFlags: 0
@@ -3110,6 +3152,10 @@ PrefabInstance:
     - target: {fileID: 5396563416744544128, guid: 97748edb8f1a01242b48008cad80b31d, type: 3}
       propertyPath: m_Name
       value: Tundra (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 5396563416744544128, guid: 97748edb8f1a01242b48008cad80b31d, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8988947418518893971, guid: 97748edb8f1a01242b48008cad80b31d, type: 3}
       propertyPath: m_RootOrder
@@ -3456,6 +3502,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Asteroid Field (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 4310993808304938993, guid: 7aac070902c932546b0e428083d77e42, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6092445089223729696, guid: 7aac070902c932546b0e428083d77e42, type: 3}
       propertyPath: m_RootOrder
       value: 4
@@ -3519,7 +3569,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5013454637359159159, guid: e7f1cdee8e4a6f24bb3204fd12e38315, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8342926791371203940, guid: e7f1cdee8e4a6f24bb3204fd12e38315, type: 3}
       propertyPath: m_RootOrder
@@ -3596,7 +3646,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 100006, guid: 339ec13e94b70ca469275f6f7e29bac3, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 100010, guid: 339ec13e94b70ca469275f6f7e29bac3, type: 3}
       propertyPath: m_Layer
@@ -4260,6 +4310,10 @@ PrefabInstance:
     - target: {fileID: 5331585953082624635, guid: 28597c4c2f7e32d498c4f34ff6d3d9e7, type: 3}
       propertyPath: m_Name
       value: Earth
+      objectReference: {fileID: 0}
+    - target: {fileID: 5331585953082624635, guid: 28597c4c2f7e32d498c4f34ff6d3d9e7, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 9198251450829191272, guid: 28597c4c2f7e32d498c4f34ff6d3d9e7, type: 3}
       propertyPath: m_RootOrder
@@ -4985,7 +5039,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 100008, guid: 879451a5e2214f143a7edf5dd3e32020, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 400008, guid: 879451a5e2214f143a7edf5dd3e32020, type: 3}
       propertyPath: m_RootOrder
@@ -5152,7 +5206,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1412742708598286, guid: 347040970b496ba4086308c48e34652b, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1577956311297630, guid: 347040970b496ba4086308c48e34652b, type: 3}
       propertyPath: m_Layer
@@ -5351,7 +5405,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 100008, guid: aaf860cd8993a6c4b984c97449417579, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 400008, guid: aaf860cd8993a6c4b984c97449417579, type: 3}
       propertyPath: m_RootOrder
@@ -5507,7 +5561,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1345651076695995216, guid: 642454a265967e1468360a08fc66db60, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2663860894798233923, guid: 642454a265967e1468360a08fc66db60, type: 3}
       propertyPath: m_RootOrder
@@ -5712,6 +5766,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: satelie (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 1412742708598286, guid: 347040970b496ba4086308c48e34652b, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4874934499113314, guid: 347040970b496ba4086308c48e34652b, type: 3}
       propertyPath: m_RootOrder
       value: 5
@@ -5812,6 +5870,10 @@ PrefabInstance:
     - target: {fileID: 4381472403175285050, guid: b9049dd74bfbc314788b507ed5a2ef2a, type: 3}
       propertyPath: m_Name
       value: Temperate
+      objectReference: {fileID: 0}
+    - target: {fileID: 4381472403175285050, guid: b9049dd74bfbc314788b507ed5a2ef2a, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b9049dd74bfbc314788b507ed5a2ef2a, type: 3}
@@ -6687,6 +6749,10 @@ PrefabInstance:
     - target: {fileID: 100006, guid: 3ac3af0756bb3654690122060f9cef08, type: 3}
       propertyPath: m_Name
       value: SwirlUpgrade
+      objectReference: {fileID: 0}
+    - target: {fileID: 100006, guid: 3ac3af0756bb3654690122060f9cef08, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 400006, guid: 3ac3af0756bb3654690122060f9cef08, type: 3}
       propertyPath: m_RootOrder
