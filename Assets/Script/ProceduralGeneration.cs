@@ -142,9 +142,9 @@ public class ProceduralGeneration : MonoBehaviour
         currPos = leftPos;
 
         //make sure the position is away from the wall
-        currPos.x = leftPos.x + leftDimensions.x; //* 2f;
+        currPos.x = leftPos.x + leftDimensions.x * 1.1f; //* 2f;
         currPos.y = leftPos.y;
-        currPos.z = topPos.z + topDimensions.z;
+        currPos.z = topPos.z - topDimensions.z * 1.1f;
 
         
 
@@ -325,7 +325,7 @@ public class ProceduralGeneration : MonoBehaviour
             {
                 Debug.Log("We have hit a wall");
                 //check if we have any space on the bottom
-                if (currPos.z - maxPos.z < stopAlgo.z)
+                if (currPos.z - maxPos.z * 1.1 < stopAlgo.z)
                 {
                     Debug.Log("we hit the bottom");
                     //if we don't have space, end the algo
@@ -339,7 +339,7 @@ public class ProceduralGeneration : MonoBehaviour
                     currPos.z -= maxPos.z * 1.1f;
                 }
                 
-                currPos.x = leftPos.x + leftDimensions.x;
+                currPos.x = leftPos.x + leftDimensions.x * 1.1f;
                 
             }
             //if we haven't, continue to iterate to the right
