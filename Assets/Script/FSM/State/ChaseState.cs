@@ -18,7 +18,7 @@ public class ChaseState : IState
     float speed = 0.01f;
     private float nextFindPathTime;
     private float FindPathTimeRate = 1f;
-    private float maxForce = 20f, maxSpeed = 20f, slowingRadius = 0.5f, drag = 2f;
+    private float maxForce = 10f, maxSpeed = 10f, slowingRadius = 0.5f, drag = 2f;
     private float pathRadius = 0.001f, futureAhead = 0.25f, avoidanceDistance = 3f, avoidanceWidth = 2f;
     private int currentPath = 0;
     public ChaseState(FSM fsm, GameObject _gameObject)
@@ -160,28 +160,25 @@ public class ChaseState : IState
             }
             if (worldRecord > pathRadius)
             {
-                m_GameObject.transform.LookAt(m_Rigidbody.velocity);
                 if (currentPath == pathList.Count - 2)
                 {
-                    var velocity = Arrive(target, m_Rigidbody.position, m_Rigidbody.velocity * 0.1f, maxSpeed, maxForce, slowingRadius);
-                    m_GameObject.transform.LookAt(velocity);
+                    var velocity = Arrive(target, m_Rigidbody.position, m_Rigidbody.velocity, maxSpeed, maxForce, slowingRadius);
                     m_Rigidbody.AddForce(velocity);
                     currentPath = 0;
                 }
                 else
                 {
-                    var velocity = Seek(target, m_Rigidbody.position, m_Rigidbody.velocity * 0.1f, maxSpeed, maxForce);
-                    m_GameObject.transform.LookAt(velocity);
+                    var velocity = Seek(target, m_Rigidbody.position, m_Rigidbody.velocity, maxSpeed, maxForce);
                     m_Rigidbody.AddForce(velocity);
                 }
                 //If want obstacle avoidance, uncomment this.
                 // m_Rigidbody.AddForce(obstacleAvoidance());
             }
-            // Vector3 targetDir = target - m_Rigidbody.position;
-            // tf.rotation = Quaternion.Slerp(tf.rotation,  Quaternion.Euler(new Vector3(0f,Mathf.Atan2(targetDir.x, targetDir.z) * Mathf.Rad2Deg, 0f)), 0.1f);
+            Vector3 targetDir = target - m_Rigidbody.position;
+            Quaternion toRotation = Quaternion.LookRotation(targetDir);
+            tf.rotation = Quaternion.Slerp(tf.rotation, toRotation, 0.1f);    
         }
     }
-
 
     Vector3 FindTarget(Vector3 start, Vector3 end, Vector3 futurePostion)
     {
