@@ -2951,7 +2951,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   RaceBDroid: {fileID: 1046124869085478423, guid: 2cb688ea3eff0964f856e8f65ebf15f2, type: 3}
-  RaceADroid: {fileID: 0}
+  RaceADroid: {fileID: 8462523760814939029, guid: 34a6e7cbd20193c4ea5a574c7803463a, type: 3}
   shipController: {fileID: 321890474}
   spawnValue: {x: 0, y: 0, z: 0}
   canSaveSmallShip: 0
