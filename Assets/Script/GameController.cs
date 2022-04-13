@@ -22,6 +22,7 @@ public class GameController : MonoBehaviour
 
     int level = 1;
     public Vector3 spawnValue;
+    public int scoreToWin;
 
     int maxSpawnWaitTime = 5;
 
@@ -292,7 +293,7 @@ public class GameController : MonoBehaviour
     {
         if (isGameOver)
             return;
-        if(score > 10)
+        if(score > scoreToWin)
         {
             canSaveSmallShip = true;
 

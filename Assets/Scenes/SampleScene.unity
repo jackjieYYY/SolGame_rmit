@@ -2924,14 +2924,14 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 782836889}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: db5cb053a726c1d4699756902b4837ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   boidPref: {fileID: 5892995979193577986, guid: d7ea8f6ccd93eac428855b018c3b2f3a, type: 3}
   BoidsTargetObject: {fileID: 321890472}
-  startingCount: 40
+  startingCount: 25
   neighborRadius: 2
   isMoveForwarTarget: 0
   minSpawnerX: -18
@@ -2954,6 +2954,7 @@ MonoBehaviour:
   RaceADroid: {fileID: 8462523760814939029, guid: 34a6e7cbd20193c4ea5a574c7803463a, type: 3}
   shipController: {fileID: 321890474}
   spawnValue: {x: 0, y: 0, z: 0}
+  scoreToWin: 50
   canSaveSmallShip: 0
   GameOverText: {fileID: 1858191551}
   RestartText: {fileID: 1521319713}
