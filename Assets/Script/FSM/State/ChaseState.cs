@@ -172,12 +172,11 @@ public class ChaseState : IState
                     m_Rigidbody.AddForce(velocity);
                 }
                 //If want obstacle avoidance, uncomment this.
+                
                 m_Rigidbody.AddForce(obstacleAvoidance());
-            }
-            Vector3 targetDir = target - m_Rigidbody.position;
-            targetDir.y = 0f;
-            Quaternion toRotation = Quaternion.LookRotation(targetDir);
-            tf.rotation = Quaternion.Slerp(tf.rotation, toRotation, 0.2f);    
+                m_Rigidbody.transform.LookAt(m_Rigidbody.velocity + m_Rigidbody.position, Vector3.up);
+
+            }           
         }
     }
 
