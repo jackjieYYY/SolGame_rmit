@@ -84,8 +84,8 @@ public class RaceA_FSMController : MonoBehaviour
             {
                 ship.ChangeHealth(-1);
                 //if the ship is on zero health, destroy it as well
-                gameController.RaceADroid_Destory(gameObject);
-                Destroy(gameObject);
+                //gameController.RaceADroid_Destory(gameObject);
+                //Destroy(gameObject);
             }
         }
         else
@@ -97,6 +97,13 @@ public class RaceA_FSMController : MonoBehaviour
 
                 Destroy(collision.gameObject);
             }
+            else if (collision.name.Contains("Boid"))
+            {
+                Instantiate(deathExplosion, gameObject.transform.position, gameObject.transform.rotation);
+                //gameController.addScore(1);
+                Destroy(collision.gameObject);
+
+            }
             
         }
 
@@ -104,9 +111,12 @@ public class RaceA_FSMController : MonoBehaviour
         HP = HP - damage;
         if (HP <= 0)
         {
+            Instantiate(deathExplosion, gameObject.transform.position, gameObject.transform.rotation);
             AudioSource.PlayClipAtPoint(explosion, this.gameObject.transform.position);
             gameController.addScore(score);
             m_Fsm.TransitionState(StateType.Die);
+            gameController.RaceADroid_Destory(gameObject);
+            Destroy(gameObject);
         }
 
     }

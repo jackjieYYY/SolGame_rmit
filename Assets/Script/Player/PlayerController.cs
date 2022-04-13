@@ -299,6 +299,7 @@ public class PlayerController : MonoBehaviour
         if (other.name.Contains("Boid") && m_Spanwer.isMoveForwarTarget)
         {
             Destroy(other.gameObject);
+            gameController.addScore(1);
         }
     }
 

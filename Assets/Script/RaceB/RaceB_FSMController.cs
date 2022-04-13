@@ -90,8 +90,7 @@ public class RaceB_FSMController : MonoBehaviour
             { 
                 ship.ChangeHealth(-1);
                 //if the ship is on zero health, destroy it as well
-                gameController.RaceBDroid_Destory(gameObject);
-                Destroy(gameObject);
+
             }
         }
         else
@@ -100,7 +99,8 @@ public class RaceB_FSMController : MonoBehaviour
             //if the collision object is not the ship, it should be destroyed on contact
             if(collision.name == "PlayerBolt(Clone)" || collision.name == "PlayerBlast(Clone)")
             {
-                gameController.RaceBDroid_Destory(gameObject);
+                Instantiate(deathExplosion, gameObject.transform.position, gameObject.transform.rotation);
+                //gameController.RaceBDroid_Destory(gameObject);
                 Destroy(collision.gameObject);
             }
             
@@ -110,6 +110,7 @@ public class RaceB_FSMController : MonoBehaviour
         HP = HP - damage;
         if (HP <= 0)
         {
+            gameController.RaceBDroid_Destory(gameObject);
             AudioSource.PlayClipAtPoint(explosion, this.gameObject.transform.position);
             gameController.addScore(score);
             m_Fsm.TransitionState(StateType.Die);

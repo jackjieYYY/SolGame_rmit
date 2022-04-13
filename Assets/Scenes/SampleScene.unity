@@ -1268,7 +1268,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: d56127010b323174cb72b2f22ca3027f, type: 3}
+  m_audioClip: {fileID: 8300000, guid: b9ebd2d01d4f709498970ebe1f5d3f0b, type: 3}
   m_PlayOnAwake: 1
   m_Volume: 0.066
   m_Pitch: 1
@@ -2931,7 +2931,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   boidPref: {fileID: 5892995979193577986, guid: d7ea8f6ccd93eac428855b018c3b2f3a, type: 3}
   BoidsTargetObject: {fileID: 321890472}
-  startingCount: 40
+  startingCount: 25
   neighborRadius: 2
   isMoveForwarTarget: 0
   minSpawnerX: -18
@@ -2954,6 +2954,7 @@ MonoBehaviour:
   RaceADroid: {fileID: 8462523760814939029, guid: 34a6e7cbd20193c4ea5a574c7803463a, type: 3}
   shipController: {fileID: 321890474}
   spawnValue: {x: 0, y: 0, z: 0}
+  scoreToWin: 50
   canSaveSmallShip: 0
   GameOverText: {fileID: 1858191551}
   RestartText: {fileID: 1521319713}
