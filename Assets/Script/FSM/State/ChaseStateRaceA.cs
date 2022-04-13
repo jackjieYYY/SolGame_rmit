@@ -6,10 +6,12 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
-public class ChaseState : IState
+public class ChaseStateRaceA : IState
 {
+    RaceA_FSMController RaceA;
     private GameController gameController;
     GameObject player;
+
     GameObject m_GameObject;
     Rigidbody m_Rigidbody;
     FSM m_FSM;
@@ -21,13 +23,11 @@ public class ChaseState : IState
     private float maxForce = 10f, maxSpeed = 10f, slowingRadius = 0.5f, drag = 2f;
     private float pathRadius = 0.001f, futureAhead = 0.25f, avoidanceDistance = 3f, avoidanceWidth = 2f;
     private int currentPath = 0;
-    public ChaseState(FSM fsm, GameObject _gameObject)
+    public ChaseStateRaceA(FSM fsm, GameObject _gameObject)
     {
         player = GameObject.Find("Player");
         m_GameObject = _gameObject;
-
         m_Rigidbody = m_GameObject.GetComponent<Rigidbody>();
-
         m_Rigidbody.drag = drag;
         tf = m_GameObject.transform;
 
@@ -39,6 +39,10 @@ public class ChaseState : IState
         }
     }
 
+    public void setRaceA(RaceA_FSMController RaceA)
+    {
+        this.RaceA = RaceA;
+    }
 
 
     public void OnEnter()   //  The method that should be performed to enter this state
@@ -58,16 +62,16 @@ public class ChaseState : IState
             nextFindPathTime = Time.time + FindPathTimeRate;
             try
             {
-                TryGetPath(player.GetComponent<Transform>().position);
+                TryGetPath(RaceA.GetComponent<Transform>().position);
             }
 
             catch (Exception e)
             {
                 return;
-
             }
 
         }
+
         if (path != null)
         {
             speed = gameController.getDroidSpeed();

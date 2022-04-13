@@ -8,6 +8,8 @@ public class RaceA_FSMController : MonoBehaviour
 
     public GameObject deathExplosion;
     public GameObject spawnAnimation;
+    PlayerController playerController;
+    GameObject ship;
 
     public int HP = 2;
     int score = 1;
@@ -30,9 +32,12 @@ public class RaceA_FSMController : MonoBehaviour
 
         var enterState = new EnterState(m_Fsm, gameObject);
         enterState.setLocalScale(new Vector3(0.4f, 0.4f, 0.4f));
-        m_Fsm.AddState(StateType.Enter,enterState);
 
+        m_Fsm.AddState(StateType.Enter,enterState);
         m_Fsm.AddState(StateType.SpawnAnimation, new SpawnAnimationState(m_Fsm, gameObject, spawnAnimation));
+        var patrollingState = new PatrollingState(m_Fsm, gameObject);
+        patrollingState.setPatrollingArea(0, 20, 0, 20);
+        m_Fsm.AddState(StateType.Patrolling, patrollingState);
         m_Fsm.AddState(StateType.Chase,new ChaseState(m_Fsm,gameObject));
         m_Fsm.AddState(StateType.Die, new RaceADieState(m_Fsm,gameObject,deathExplosion));
         m_Fsm.TransitionState(StateType.Enter);
@@ -43,6 +48,13 @@ public class RaceA_FSMController : MonoBehaviour
         {
             gameController = _gameController.GetComponent<GameController>();
         }
+        ship = GameObject.Find("Player");
+        if (ship != null)
+        {
+            playerController = ship.GetComponent<PlayerController>();
+        }
+
+
     }
 
 
@@ -61,6 +73,24 @@ public class RaceA_FSMController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if(playerController == null)//gameover
+        {
+            return;
+        }
+        if (m_Fsm.currentStateType == StateType.Enter || m_Fsm.currentStateType == StateType.SpawnAnimation)
+        {
+            m_Fsm.OnUpdate();
+            return;
+        }
+        Vector3 centerOffset = playerController.transform.position - transform.position;
+        if (centerOffset.magnitude > 10f)
+        {
+            m_Fsm.TransitionState(StateType.Patrolling);
+        }
+        else
+        {
+            m_Fsm.TransitionState(StateType.Chase);
+        }
         m_Fsm.OnUpdate();
     }
 
@@ -102,9 +132,13 @@ public class RaceA_FSMController : MonoBehaviour
                 Instantiate(deathExplosion, gameObject.transform.position, gameObject.transform.rotation);
                 //gameController.addScore(1);
                 Destroy(collision.gameObject);
-
             }
-            
+            else if (collision.name.Contains("raceB"))
+            {
+                Instantiate(deathExplosion, gameObject.transform.position, gameObject.transform.rotation);
+                //gameController.addScore(1);
+                Destroy(collision.gameObject);
+            }
         }
 
         //Regardless of what hits the drone, it should take damage

@@ -132,6 +132,15 @@ public class GameController : MonoBehaviour
 
     }
 
+    public RaceA_FSMController GetRaceA()
+    {
+        if (FindObjectsOfType<RaceA_FSMController>().Length > 0)
+        {
+            return FindObjectsOfType<RaceA_FSMController>()[0];
+        }
+        return null;
+    }
+
     public void RaceADroid_Destory(GameObject RaceADroid)
     {
         RaceADroidList.Remove(RaceADroid);
