@@ -181,7 +181,7 @@ MonoBehaviour:
   AvoidanceWeights: 2
   CohesionWeights: 1
   AlignmentWeights: 2
-  ObstaclesWeights: 5
+  ObstaclesWeights: 10
   MoveForwarTargetWeights: 3
   SmoothTime: 0.5
 --- !u!1001 &3366109640655107125

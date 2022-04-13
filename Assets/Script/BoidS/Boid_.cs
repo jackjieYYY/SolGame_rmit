@@ -40,10 +40,13 @@ public class Boid_ : MonoBehaviour
     public float CohesionWeights = 1;
     public float AlignmentWeights = 1;
     public float ObstaclesWeights = 5;
+    public float StayInRadiusWeight = 3;
     public float MoveForwarTargetWeights = 3;
     public float SmoothTime = 0.5f;
-
+    
     static Vector3[] m_ObstanceRayDirection = null;
+    Vector3 center;
+    public float radius = 30f;
 
     void Awake()
     {
@@ -58,6 +61,7 @@ public class Boid_ : MonoBehaviour
         t.endColor = RandomColor();
 
         setObstanceRayDirection();
+        center = Vector3.zero;
     }
 
     void Start()
@@ -75,8 +79,9 @@ public class Boid_ : MonoBehaviour
         tempvelocity += CalAlignment(); //alignment
         tempvelocity += CalAvoidance(); //separation
         tempvelocity += CalCohesion();  //cohesion
-        tempvelocity += CalMoveForwarTarget();//a seek behaviour that accounts for moving targets (offset pursuit)
         tempvelocity += CalObstacles();//Agents that do not use pathfinding have some sort of obstacle avoidance steering behaviour.
+        tempvelocity += CalMoveForwarTarget();//a seek behaviour that accounts for moving targets (offset pursuit)
+        tempvelocity += CalStayInRadius();
         Move(tempvelocity);
     }
 
@@ -207,6 +212,21 @@ public class Boid_ : MonoBehaviour
         tempMove = velocityHandling(tempMove, MoveForwarTargetWeights);
         return tempMove;
     }
+
+    Vector3 CalStayInRadius()
+    {
+        Vector3 centerOffset = center - transform.position;
+        float temp = centerOffset.magnitude / radius;
+        if(temp < 0.9f)
+        {
+            return Vector3.zero;
+        }
+        centerOffset = centerOffset * temp * temp;
+        centerOffset = velocityHandling(centerOffset, StayInRadiusWeight);
+        return centerOffset;
+
+    }
+
 
     Vector3 velocityHandling(Vector3 tempVelocity,float weights)
     {
