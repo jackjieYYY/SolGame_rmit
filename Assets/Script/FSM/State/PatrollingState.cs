@@ -6,7 +6,8 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
-public class ChaseState : IState
+
+public class PatrollingState : IState
 {
     private GameController gameController;
     GameObject player;
@@ -18,69 +19,92 @@ public class ChaseState : IState
     float speed = 0.01f;
     private float nextFindPathTime;
     private float FindPathTimeRate = 1f;
-    private float maxForce = 5f, maxSpeed = 5f, slowingRadius = 0.5f, drag = 1f;
+    private float maxForce = 10f, maxSpeed = 10f, slowingRadius = 0.5f, drag = 2f;
     private float pathRadius = 0.001f, futureAhead = 0.25f, avoidanceDistance = 3f, avoidanceWidth = 2f;
     private int currentPath = 0;
-    public ChaseState(FSM fsm, GameObject _gameObject)
+
+    float PatrollingMinX = 0f;
+    float PatrollingMaxX = 20f;
+    float PatrollingMinY = 0f;
+    float PatrollingMaxY = 20f;
+    Vector3 PatrollingPos = Vector3.zero;
+
+
+    public PatrollingState(FSM fsm, GameObject _gameObject)
     {
         player = GameObject.Find("Player");
         m_GameObject = _gameObject;
-
         m_Rigidbody = m_GameObject.GetComponent<Rigidbody>();
-
         m_Rigidbody.drag = drag;
         tf = m_GameObject.transform;
-
         m_FSM = fsm;
         var _gameController = GameObject.Find("GameController");
         if (_gameController != null)
         {
             gameController = _gameController.GetComponent<GameController>();
         }
+        PatrollingPos = RandomPosition();
     }
 
-
-
-    public void OnEnter()   //  The method that should be performed to enter this state
+    public void setPatrollingArea(float minX, float maxX, float minY, float maxY)
     {
-
-
+        PatrollingMinX = minX;
+        PatrollingMaxX = maxX;
+        PatrollingMinY = minY;
+        PatrollingMaxY = maxY;
     }
-    public void OnUpdate() //The method that should be executed to maintain this state
+
+
+
+    public void OnEnter()
+    {
+        //
+    }
+
+    public Vector3 RandomPosition()
+    {
+        return new Vector3(UnityEngine.Random.RandomRange(PatrollingMinX, PatrollingMaxX), 0, UnityEngine.Random.Range(PatrollingMinY, PatrollingMaxY));
+    }
+
+    public void OnUpdate()
     {
         if (gameController == null)
         {
             return;
         }
+
         if (Time.time > nextFindPathTime)
         {
 
             nextFindPathTime = Time.time + FindPathTimeRate;
+            Vector3 centerOffset = m_GameObject.transform.position - PatrollingPos;
+            if (centerOffset.magnitude > 2f)
+            {
+                return;
+            }
             try
             {
-                TryGetPath(player.GetComponent<Transform>().position);
+                TryGetPath(PatrollingPos);
             }
 
             catch (Exception e)
             {
                 return;
-
             }
         }
+
+
         if (path != null)
         {
             speed = gameController.getDroidSpeed();
             FollowPath(path);
         }
-        m_Rigidbody.position = new Vector3(m_Rigidbody.position.x, 0, m_Rigidbody.position.z);
     }
-    public void OnExit() //The method that should be executed to exit this state
+
+    public void OnExit()
     {
-        Debug.Log("I am ChaseState. OnExit()");
+      
     }
-
-
-
     void TryGetPath(Vector3 end)
     {
         PathManager.Request(m_GameObject.transform.position, end, true, onPathFound);
@@ -168,11 +192,11 @@ public class ChaseState : IState
                     m_Rigidbody.AddForce(velocity);
                 }
                 //If want obstacle avoidance, uncomment this.
-                
-                m_Rigidbody.AddForce(obstacleAvoidance());
-                m_Rigidbody.transform.LookAt(m_Rigidbody.velocity + m_Rigidbody.position, Vector3.up);
-
-            }           
+                // m_Rigidbody.AddForce(obstacleAvoidance());
+            }
+            Vector3 targetDir = target - m_Rigidbody.position;
+            Quaternion toRotation = Quaternion.LookRotation(targetDir);
+            tf.rotation = Quaternion.Slerp(tf.rotation, toRotation, 0.1f);
         }
     }
 
@@ -197,10 +221,10 @@ public class ChaseState : IState
         Vector3 bottomLeft = m_Rigidbody.position + (-tf.right * radius) + (-tf.forward * radius);
         Vector3 topRight = m_Rigidbody.position + ((tf.right * radius * avoidanceWidth) + (tf.forward * avoidanceDistance));
         Vector3 topLeft = m_Rigidbody.position + (-tf.right * radius * avoidanceWidth) + (tf.forward * avoidanceDistance);
-        Debug.DrawRay(bottomRight, topRight - bottomRight, Color.green);
-        Debug.DrawRay(bottomLeft, topLeft - bottomLeft, Color.green);
-        Debug.DrawRay(bottomRight, bottomLeft - bottomRight, Color.green);
-        Debug.DrawRay(topRight, topLeft - topRight, Color.green);
+        // Debug.DrawRay(bottomRight, topRight - bottomRight, Color.green);
+        // Debug.DrawRay(bottomLeft, topLeft - bottomLeft, Color.green);
+        // Debug.DrawRay(bottomRight, bottomLeft - bottomRight, Color.green);
+        // Debug.DrawRay(topRight, topLeft - topRight, Color.green);
         RaycastHit[] hits = new RaycastHit[2];
         bool[] isHit = new bool[2];
         isHit[0] = Physics.Raycast(bottomLeft, topLeft - bottomLeft, out hits[0], avoidanceDistance, LayerMask.GetMask("unwalkable"));
@@ -221,6 +245,6 @@ public class ChaseState : IState
         }
 
     }
+
+
 }
-
-

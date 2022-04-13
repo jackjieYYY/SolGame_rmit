@@ -6,10 +6,12 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
-public class ChaseState : IState
+public class ChaseStateRaceA : IState
 {
+    RaceA_FSMController RaceA;
     private GameController gameController;
     GameObject player;
+
     GameObject m_GameObject;
     Rigidbody m_Rigidbody;
     FSM m_FSM;
@@ -18,16 +20,14 @@ public class ChaseState : IState
     float speed = 0.01f;
     private float nextFindPathTime;
     private float FindPathTimeRate = 1f;
-    private float maxForce = 5f, maxSpeed = 5f, slowingRadius = 0.5f, drag = 1f;
+    private float maxForce = 10f, maxSpeed = 10f, slowingRadius = 0.5f, drag = 2f;
     private float pathRadius = 0.001f, futureAhead = 0.25f, avoidanceDistance = 3f, avoidanceWidth = 2f;
     private int currentPath = 0;
-    public ChaseState(FSM fsm, GameObject _gameObject)
+    public ChaseStateRaceA(FSM fsm, GameObject _gameObject)
     {
         player = GameObject.Find("Player");
         m_GameObject = _gameObject;
-
         m_Rigidbody = m_GameObject.GetComponent<Rigidbody>();
-
         m_Rigidbody.drag = drag;
         tf = m_GameObject.transform;
 
@@ -39,6 +39,10 @@ public class ChaseState : IState
         }
     }
 
+    public void setRaceA(RaceA_FSMController RaceA)
+    {
+        this.RaceA = RaceA;
+    }
 
 
     public void OnEnter()   //  The method that should be performed to enter this state
@@ -58,21 +62,21 @@ public class ChaseState : IState
             nextFindPathTime = Time.time + FindPathTimeRate;
             try
             {
-                TryGetPath(player.GetComponent<Transform>().position);
+                TryGetPath(RaceA.GetComponent<Transform>().position);
             }
 
             catch (Exception e)
             {
                 return;
-
             }
+
         }
+
         if (path != null)
         {
             speed = gameController.getDroidSpeed();
             FollowPath(path);
         }
-        m_Rigidbody.position = new Vector3(m_Rigidbody.position.x, 0, m_Rigidbody.position.z);
     }
     public void OnExit() //The method that should be executed to exit this state
     {
@@ -168,11 +172,11 @@ public class ChaseState : IState
                     m_Rigidbody.AddForce(velocity);
                 }
                 //If want obstacle avoidance, uncomment this.
-                
-                m_Rigidbody.AddForce(obstacleAvoidance());
-                m_Rigidbody.transform.LookAt(m_Rigidbody.velocity + m_Rigidbody.position, Vector3.up);
-
-            }           
+                // m_Rigidbody.AddForce(obstacleAvoidance());
+            }
+            Vector3 targetDir = target - m_Rigidbody.position;
+            Quaternion toRotation = Quaternion.LookRotation(targetDir);
+            tf.rotation = Quaternion.Slerp(tf.rotation, toRotation, 0.1f);    
         }
     }
 
@@ -197,10 +201,10 @@ public class ChaseState : IState
         Vector3 bottomLeft = m_Rigidbody.position + (-tf.right * radius) + (-tf.forward * radius);
         Vector3 topRight = m_Rigidbody.position + ((tf.right * radius * avoidanceWidth) + (tf.forward * avoidanceDistance));
         Vector3 topLeft = m_Rigidbody.position + (-tf.right * radius * avoidanceWidth) + (tf.forward * avoidanceDistance);
-        Debug.DrawRay(bottomRight, topRight - bottomRight, Color.green);
-        Debug.DrawRay(bottomLeft, topLeft - bottomLeft, Color.green);
-        Debug.DrawRay(bottomRight, bottomLeft - bottomRight, Color.green);
-        Debug.DrawRay(topRight, topLeft - topRight, Color.green);
+        // Debug.DrawRay(bottomRight, topRight - bottomRight, Color.green);
+        // Debug.DrawRay(bottomLeft, topLeft - bottomLeft, Color.green);
+        // Debug.DrawRay(bottomRight, bottomLeft - bottomRight, Color.green);
+        // Debug.DrawRay(topRight, topLeft - topRight, Color.green);
         RaycastHit[] hits = new RaycastHit[2];
         bool[] isHit = new bool[2];
         isHit[0] = Physics.Raycast(bottomLeft, topLeft - bottomLeft, out hits[0], avoidanceDistance, LayerMask.GetMask("unwalkable"));
