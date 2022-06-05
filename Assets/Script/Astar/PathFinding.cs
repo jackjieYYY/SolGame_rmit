@@ -12,20 +12,21 @@ public class PathFinding : MonoBehaviour
 {
     PathManager pathManager;
     worldGrid grid;
-    bool YellowPathOnly = true;
+    private int NORMAL_STRAIGHT_COST = 10, NORMAL_DIAGONAl_COST = 14, OBSTACLE_STRAIGHT_COST = 20, OBSTACLE_DIAGONAL_COST = 28;
     public LayerMask unwalkableMask;
     private void Awake()
     {
         pathManager = GetComponent<PathManager>();
         grid = GetComponent<worldGrid>();
+        unwalkableMask = LayerMask.GetMask("unwalkable");
     }
 
-    public List<Vector3> findPath(Vector3 startPos, Vector3 targetPos)
+    public List<Vector3> findPath(Vector3 startPos, Vector3 targetPos, bool smootherPath)
     {
 
         Node startNode = grid.NodeFromWorldPoint(startPos);
         Node targetNode = grid.NodeFromWorldPoint(targetPos);
-        UnityEngine.Debug.DrawLine(startNode.worldPostion, targetNode.worldPostion, Color.red);
+        // UnityEngine.Debug.DrawLine(startNode.worldPostion, targetNode.worldPostion, Color.red);
         List<Node> openSet = new List<Node>();
         HashSet<Node> closedSet = new HashSet<Node>();
         openSet.Add(startNode);
@@ -43,7 +44,7 @@ public class PathFinding : MonoBehaviour
             closedSet.Add(currentNode);
             if (currentNode.worldPostion == targetNode.worldPostion)
             {
-                return RetracePath(startNode, currentNode);
+                return RetracePath(startNode, currentNode, smootherPath);
             }
 
             foreach (Node neighbour in grid.GetNeighbours(currentNode))
@@ -68,8 +69,7 @@ public class PathFinding : MonoBehaviour
         }
         return null;
     }
-
-    List<Vector3> RetracePath(Node startNode, Node endNode)
+    List<Vector3> RetracePath(Node startNode, Node endNode, bool smootherPath)
     {
         List<Node> path = new List<Node>();
         Node currentNode = endNode;
@@ -79,24 +79,45 @@ public class PathFinding : MonoBehaviour
             currentNode = currentNode.Parent;
         }
         path.Reverse();
-        //return SimplifyPath();
-        return GetSmootherPath(path);
+        List<Vector3> pathList = new List<Vector3>();
+        foreach (Node node in path)
+        {
+            pathList.Add(node.worldPostion);
+        }
+        if (smootherPath)
+        {
+            try
+            {
+                return GetSmootherPath(path);
+            }
+            catch (Exception)
+            {
+
+                return null;
+            }
+        }
+
+
+
+
+        else
+            return pathList;
     }
 
     List<Vector3> SimplifyPath(List<Node> path)
     {
         List<Vector3> wayPoints = new List<Vector3>();
         Vector2 directionOld = Vector2.zero;
-        for(int i = 1; i < path.Count; i++)
+        for (int i = 1; i < path.Count; i++)
         {
             Vector2 directionNew = new Vector2(path[i - 1].gridX - path[i].gridX, path[i - 1].gridY - path[i].gridY);
-            if(directionNew != directionOld)
+            if (directionNew != directionOld)
             {
                 wayPoints.Add(path[i].worldPostion);
             }
             else
             {
-                wayPoints[wayPoints.Count-1] = path[i].worldPostion;
+                wayPoints[wayPoints.Count - 1] = path[i].worldPostion;
             }
             directionOld = directionNew;
         }
@@ -117,7 +138,7 @@ public class PathFinding : MonoBehaviour
             //Draw debug lines for pathfinding before smoothing
             for (int i = 0; i < pathInVec3.Count - 1; i++)
             {
-                UnityEngine.Debug.DrawLine(pathInVec3[i], pathInVec3[i + 1],Color.white);
+                UnityEngine.Debug.DrawLine(pathInVec3[i], pathInVec3[i + 1], Color.white);
             }
 
             //Path smoothing
@@ -133,43 +154,60 @@ public class PathFinding : MonoBehaviour
                 {
                     for (int j = i + 1; j < pathInVec3.Count; j++)
                     {
-                        if (YellowPathOnly)
+
+                        // Vector3 direction = (pathInVec3[j] - pathInVec3[i]).normalized * (pathInVec3[j] - pathInVec3[i]).magnitude;
+                        // bool hit = Physics.Raycast(pathInVec3[i], direction, (pathInVec3[j] - pathInVec3[i]).magnitude, unwalkableMask);
+                        // if (hit)
+                        // {
+                        //     pathSmoothing.Add(pathInVec3[j - 1]);
+                        //     currIdx = j - 1;
+                        //     break;
+                        // }
+                        // else
+                        // {
+                        //     for (float k = 0; k < (pathInVec3[j] - pathInVec3[i]).magnitude; k += 0.01f)
+                        //     {
+                        //         Vector3 P = Vector3.Lerp(pathInVec3[i], pathInVec3[j], k);
+                        //         Vector3 n = new Vector3(Mathf.Round(P.x), P.y, Mathf.Round(P.z));
+                        //         if (Physics.CheckSphere(n, grid.nodeRadius * 3f , unwalkableMask))
+                        //         {
+                        //             pathSmoothing.Add(pathInVec3[j - 1]);
+                        //             currIdx = j - 1;
+                        //             break;  
+                        //         }
+                        //     }
+                        // }
+
+                        //Improved version of pathfinding with different node cost. This only works with node nears obstacle has higher cost, other wise the smoothed path
+                        //will not very different from the re-smoothed path.
+
+                        Vector3 direction = (pathInVec3[j] - pathInVec3[i]).normalized * (pathInVec3[j] - pathInVec3[i]).magnitude;
                         {
-                            Vector3 direction = (pathInVec3[j] - pathInVec3[i]).normalized * (pathInVec3[j] - pathInVec3[i]).magnitude;
-                            bool hit = Physics.Raycast(pathInVec3[i], direction, (pathInVec3[j] - pathInVec3[i]).magnitude, unwalkableMask);
-                            if (hit)
+                            for (float k = 0; k < (pathInVec3[j] - pathInVec3[i]).magnitude; k += 0.01f)
                             {
-                                pathSmoothing.Add(pathInVec3[j - 1]);
-                                currIdx = j - 1;
-                                break;
-                            }
-                            else
-                            {
-                                for (float k = 0; k < (pathInVec3[j] - pathInVec3[i]).magnitude; k += 0.01f)
+                                Vector3 P = Vector3.Lerp(pathInVec3[i], pathInVec3[j], k);
+                                Vector3 n = new Vector3(Mathf.Round(P.x), P.y, Mathf.Round(P.z));
+                                List<Node> nodeList = grid.GetNeighbours(grid.NodeFromWorldPoint(n));
+                                bool existed = false;
+                                foreach (Node node in nodeList)
                                 {
-                                    Vector3 P = Vector3.Lerp(pathInVec3[i], pathInVec3[j], k);
-                                    Vector3 n = new Vector3(Mathf.Round(P.x), P.y, Mathf.Round(P.z));
-                                    if (Physics.CheckSphere(n, 0.2f, unwalkableMask))
+                                    if (node.costMultiplier != Node.initCostMultiplier)
                                     {
-                                        pathSmoothing.Add(pathInVec3[j - 1]);
-                                        currIdx = j - 1;
+                                        existed = true;
                                         break;
                                     }
                                 }
+                                if (existed)
+                                {
+                                    pathSmoothing.Add(pathInVec3[j - 1]);
+                                    currIdx = j - 1;
+                                    break;
+                                }
                             }
                         }
-                        else
-                        {
-                            Vector3 direction = (pathInVec3[j] - pathInVec3[i]).normalized * (pathInVec3[j] - pathInVec3[i]).magnitude;
-                            RaycastHit rayHit;
-                            bool hit = Physics.SphereCast(pathInVec3[i], 0.2f, direction, out rayHit, (pathInVec3[j] - pathInVec3[i]).magnitude, unwalkableMask);
-                            if (hit)
-                            {
-                                pathSmoothing.Add(pathInVec3[j - 1]);
-                                currIdx = j - 1;
-                                break;
-                            }
-                        }
+
+
+
                     }
                 }
             }
@@ -190,11 +228,22 @@ public class PathFinding : MonoBehaviour
     {
         int dstX = Mathf.Abs(nodeA.gridX - nodeB.gridX);
         int dstY = Mathf.Abs(nodeA.gridY - nodeB.gridY);
-        if (dstX > dstY)
+        int maxCostMultiplier = 0;
+        foreach (Node n in grid.GetNeighbours(nodeA))
         {
-            return 14*dstY + 10 * (dstX - dstY);
+            if (n.costMultiplier > maxCostMultiplier)
+            {
+                maxCostMultiplier = n.costMultiplier;
+            }
         }
-        return 14*dstX + 10 * (dstY - dstX);
+        foreach (Node n in grid.GetNeighbours(nodeB))
+        {
+            if (n.costMultiplier > maxCostMultiplier)
+            {
+                maxCostMultiplier = n.costMultiplier;
+            }
+        }
+        return NORMAL_DIAGONAl_COST * maxCostMultiplier * Mathf.Min(dstX, dstY) + NORMAL_STRAIGHT_COST * maxCostMultiplier * Mathf.Abs(dstX - dstY);
     }
 
     // Start is called before the first frame update
@@ -223,6 +272,6 @@ public class PathFinding : MonoBehaviour
     }
     private void FixedUpdate()
     {
-        
+
     }
 }

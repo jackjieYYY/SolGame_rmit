@@ -22,7 +22,7 @@ public class Boid_ : MonoBehaviour
     Collider m_collider;
     List<Transform> NeighborsList = new List<Transform>();
     float randomVelocityFactor; //individual flock members have slightly different velocities and don¡¯t stick to a rigid formation
-    [Range(1f, 10f)]
+    [Range(0.1f, 10f)]
     public float neighborRadius = 1.5f;
     [Range(1f, 100f)]
     public float driveFactor = 10f;//Control the speed of object movement/velocity
@@ -40,10 +40,13 @@ public class Boid_ : MonoBehaviour
     public float CohesionWeights = 1;
     public float AlignmentWeights = 1;
     public float ObstaclesWeights = 5;
+    public float StayInRadiusWeight = 3;
     public float MoveForwarTargetWeights = 3;
     public float SmoothTime = 0.5f;
-
+    
     static Vector3[] m_ObstanceRayDirection = null;
+    Vector3 center;
+    public float radius = 30f;
 
     void Awake()
     {
@@ -52,12 +55,18 @@ public class Boid_ : MonoBehaviour
         {
             spanwerController = _gameController.GetComponent<Spanwer>();
         }
+
+        var t = gameObject.GetComponent<TrailRenderer>();
+        t.startColor = RandomColor();
+        t.endColor = RandomColor();
+
         setObstanceRayDirection();
+        center = Vector3.zero;
     }
 
     void Start()
     {
-        randomVelocityFactor = Random.Range(0.5f, 1f);
+        randomVelocityFactor = Random.Range(0.3f, 1f);
         this.m_collider = GetComponent<Collider>();
     }
 
@@ -72,7 +81,7 @@ public class Boid_ : MonoBehaviour
         tempvelocity += CalCohesion();  //cohesion
         tempvelocity += CalObstacles();//Agents that do not use pathfinding have some sort of obstacle avoidance steering behaviour.
         tempvelocity += CalMoveForwarTarget();//a seek behaviour that accounts for moving targets (offset pursuit)
-
+        tempvelocity += CalStayInRadius();
         Move(tempvelocity);
     }
 
@@ -152,13 +161,16 @@ public class Boid_ : MonoBehaviour
         {
             Vector3 tdir = transform.TransformDirection(dir);
             var ray = new Ray(transform.position, transform.TransformDirection(dir));
-            Debug.DrawRay(transform.position, transform.TransformDirection(dir), Color.blue, 1f);
-            var result = Physics.RaycastAll(ray, 5f);
+            var result = Physics.RaycastAll(ray, 1f);
             if (result.Length != 0)
             {
                 foreach (RaycastHit raycastHit in result)
                 {
                     if (raycastHit.transform.gameObject.name.Contains("Boid"))
+                    {
+                        continue;
+                    }
+                    if (raycastHit.transform.gameObject.name.Contains("Player"))
                     {
                         continue;
                     }
@@ -176,18 +188,15 @@ public class Boid_ : MonoBehaviour
             {
                 if (count == 0)
                 {
-                    Debug.DrawRay(transform.position, bestDir, Color.yellow, 1f);
                     return Vector3.zero;
                 }
                 else
                 {
-                    Debug.DrawRay(transform.position, tdir, Color.yellow, 1f);
                     tdir = velocityHandling(tdir, ObstaclesWeights);
                     return tdir;
                 }
             }
         }
-        Debug.DrawRay(transform.position, bestDir, Color.green, 1f);
         return Vector3.zero;
     }
 
@@ -203,6 +212,21 @@ public class Boid_ : MonoBehaviour
         tempMove = velocityHandling(tempMove, MoveForwarTargetWeights);
         return tempMove;
     }
+
+    Vector3 CalStayInRadius()
+    {
+        Vector3 centerOffset = center - transform.position;
+        float temp = centerOffset.magnitude / radius;
+        if(temp < 0.9f)
+        {
+            return Vector3.zero;
+        }
+        centerOffset = centerOffset * temp * temp;
+        centerOffset = velocityHandling(centerOffset, StayInRadiusWeight);
+        return centerOffset;
+
+    }
+
 
     Vector3 velocityHandling(Vector3 tempVelocity,float weights)
     {
@@ -226,6 +250,7 @@ public class Boid_ : MonoBehaviour
             velocity = velocity.normalized * maxSpeed;
         }
         velocity *= randomVelocityFactor;
+        velocity.y = 0;
         transform.forward = velocity;
         transform.position += velocity * Time.deltaTime;
     }
@@ -267,8 +292,29 @@ public class Boid_ : MonoBehaviour
             {
                 continue;
             }
+            if (c.gameObject.name.Contains("BackGround") || c.gameObject.name == "BackGround")
+                continue;
             NeighborsList.Add(c.transform);
         }
     }
+
+    Color RandomColor()
+    {
+        float r = Random.Range(0f, 1f);
+        float g = Random.Range(0f, 1f);
+        float b = Random.Range(0f, 1f);
+        Color color = new Color(r, g, b);
+        return color;
+    }
+
+    void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.name.Contains("Race"))
+        {
+            Destroy(other.gameObject);
+            Destroy(gameObject);
+        }
+    }
+
 
 }

@@ -13,7 +13,10 @@ public class Spanwer : MonoBehaviour
     public float neighborRadius = 1.5f;
     // Start is called before the first frame update
     public bool isMoveForwarTarget = false;
-
+    public float minSpawnerX = -15f;
+    public float maxSpawnerX = 15f;
+    public float minSpawnerZ = -15;
+    public float maxSpawnerZ = 15;
 
     void Start()
     {
@@ -23,7 +26,7 @@ public class Spanwer : MonoBehaviour
             while (true)
             {
                 count++;
-                var postion = new Vector3(Random.Range(-40, 40), 0, Random.Range(-40, 40));
+                var postion = new Vector3(Random.Range(minSpawnerX, maxSpawnerX), 0, Random.Range(minSpawnerZ, maxSpawnerZ));
                 if(count == 20)
                 {
                     return;

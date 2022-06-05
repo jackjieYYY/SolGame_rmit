@@ -6,20 +6,17 @@ public class PathFollowing : MonoBehaviour
 {
     Rigidbody m_Rigidbody;
 
-    [SerializeField] private float maxForce = 50f, maxSpeed = 50f;
     List<Vector3> pathList = new List<Vector3>();
-    [SerializeField] private float pathRadius = 1.0f, futureAhead = 0.5f;
-
-    private int currentPath = 0, transitPath = 0;
-    private bool inTransitState = false;
+    [SerializeField] private float maxForce =  15f, maxSpeed = 15f, slowingRadius = 0.5f, drag = 4f;
+    [SerializeField] private float pathRadius = 0.00001f, futureAhead = 0.5f;
+    private int currentPath = 0;
     // Start is called before the first frame update
     void Start()
     {
         m_Rigidbody = GetComponent<Rigidbody>();
+        m_Rigidbody.drag = this.drag;
     }
-    bool PointIsOnPath ( Vector3 start , Vector3 end , Vector3 point) {
-        return Vector3.Dot((end - start).normalized, (point - end).normalized) < 0f && Vector3.Dot((start - end).normalized, (point - start).normalized) < 0f;
-    }
+
     // Update is called once per frame
     void Update()
     {
@@ -34,79 +31,94 @@ public class PathFollowing : MonoBehaviour
 
     void FixedUpdate()
     {
-        if(pathList == null)
-        {
-            return;
-        }
-        for(int i =0; i  < pathList.Count - 1; i++)
-        {
-            Debug.DrawLine(pathList[i], pathList[i+1]);
-        }
-        try
-        {
-            Debug.DrawLine(m_Rigidbody.position, pathList[transitPath + 1], Color.cyan);
-        }
-        catch
-        {
-
-        }
-
-        FollowPath(pathList);
+        
     }
-    public static Vector3 Seek(Vector3 target, Vector3 position, Vector3 currentVelocity, float maxSpeed)
+
+    bool PointIsOnPath(Vector3 start, Vector3 end, Vector3 point)
+    {
+        return Vector3.Dot((end - start).normalized, (point - end).normalized) < 0f && Vector3.Dot((start - end).normalized, (point - start).normalized) < 0f;
+    }
+    public static Vector3 Seek(Vector3 target, Vector3 position, Vector3 currentVelocity, float maxSpeed, float maxForce)
     {
         Vector3 desiredVelocity = (target - position).normalized * maxSpeed;
-        Vector3 steering = desiredVelocity - currentVelocity;
-        return steering;  
+        Vector3 steering = Vector3.ClampMagnitude(desiredVelocity - currentVelocity, maxForce);
+        return steering;
     }
+    public static Vector3 Arrive(Vector3 target, Vector3 position, Vector3 currentVelocity, float maxSpeed, float maxForce, float slowingRadius)
+    {
+        Vector3 desiredVelocity = (target - position);
+        float distance = desiredVelocity.magnitude;
+        if (distance < slowingRadius)
+        {
+            desiredVelocity = desiredVelocity.normalized * maxSpeed * (distance/slowingRadius);
+        }
+        else
+        {
+            desiredVelocity = desiredVelocity.normalized * maxSpeed;
+        }
+        Vector3 steering = Vector3.ClampMagnitude(desiredVelocity - currentVelocity, maxForce);
+        return steering;
+    }
+
     void FollowPath(List<Vector3> pathList)
     {
-        if(pathList != null &&  transitPath < pathList.Count - 1)
+
+        if (pathList != null && pathList.Count != 0)
         {
-            Vector3 futurePosition = m_Rigidbody.position + m_Rigidbody.velocity * futureAhead;
-            Debug.DrawLine(m_Rigidbody.position, futurePosition, Color.red);
-            Vector3 target = FindTarget(pathList[currentPath], pathList[currentPath+1], futurePosition);
-            Debug.DrawLine(m_Rigidbody.position, target, Color.green);
-            float distance = Vector3.Distance(futurePosition, target);
-            if(PointIsOnPath(pathList[currentPath],pathList[currentPath+1], target))
+            Vector3 futurePosition = m_Rigidbody.position + (m_Rigidbody.velocity.normalized * futureAhead);
+
+            Vector3 start = pathList[currentPath];
+            Vector3 end = pathList[currentPath+1];
+            Vector3 projectedVector = FindTarget(start, end, futurePosition);
+            Vector3 target = Vector3.zero;
+            Vector3 futureProjected = projectedVector + ((end - start).normalized * futureAhead);
+
+            float distance = Vector3.Distance(futurePosition, projectedVector);
+
+            if (distance > pathRadius) 
             {
-                Vector3 steering = Vector3.zero;
-                if(distance > pathRadius)
+                target = futureProjected;
+            }
+            else 
+            {
+                target = futurePosition;
+            }
+            if (Vector2.Distance(start, projectedVector) > Vector2.Distance(start, end))
+            {
+                if (currentPath + 2 < pathList.Count) 
                 {
-                    steering = Seek(target, m_Rigidbody.position, m_Rigidbody.velocity, maxSpeed);
-                }
-                m_Rigidbody.AddForce(steering);
-                m_Rigidbody.velocity = Vector3.ClampMagnitude(m_Rigidbody.velocity, maxForce);
-                
-            }        
-            else if (!PointIsOnPath(pathList[currentPath],pathList[currentPath+1], target) && transitPath < pathList.Count - 1)
-            {   
-                transitPath = !inTransitState ? transitPath + 1 : transitPath;
-                if(transitPath >= pathList.Count - 1)
-                {
-                    return;
-                }
-                inTransitState = true;
-                Vector3 steering = Vector3.zero;
-                steering = Seek(pathList[transitPath + 1], m_Rigidbody.position, m_Rigidbody.velocity, maxSpeed);
-                m_Rigidbody.AddForce(steering);
-                m_Rigidbody.velocity = Vector3.ClampMagnitude(m_Rigidbody.velocity, maxForce);
-                Vector3 newTarget = FindTarget(pathList[transitPath], pathList[transitPath+1], futurePosition);
-                if(PointIsOnPath(pathList[transitPath],pathList[transitPath+1], newTarget))
-                {
-                    inTransitState  = false;
                     currentPath++;
+
+                }
+                else
+                {
+                    target = pathList[pathList.Count-1];
+
+                }
+
+            }
+            else
+            {
+                if (!PointIsOnPath(start, end, projectedVector))
+                {
+                    target = pathList[currentPath];
                 }
             }
+            Debug.DrawLine(m_Rigidbody.position, target, Color.red);
+            GetComponent<MeshRenderer>().transform.rotation = Quaternion.Slerp(GetComponent<MeshRenderer>().transform.rotation,  Quaternion.Euler(target), 0.1f);
+            m_Rigidbody.AddForce(Seek(target, m_Rigidbody.position, m_Rigidbody.velocity, maxSpeed, maxForce));
         }
     }
-    Vector3 FindTarget(Vector3 start, Vector3 end, Vector3 futurePostion) 
+
+
+    Vector3 FindTarget(Vector3 start, Vector3 end, Vector3 futurePostion)
     {
-        Vector3 v1 = futurePostion - start;
-        Vector3 v2 = (end - start).normalized;
-        float dotProducts = Vector2.Dot(new Vector2(v1.x, v1.z), new Vector2(v2.x, v2.z));
-        v2 *= dotProducts;
-        v2 += start;
-        return v2;
+        Vector3 startToFuturePos = futurePostion - start;
+        Vector3 pathDir = (end - start).normalized;
+        float dotProducts = Vector2.Dot(new Vector2(startToFuturePos.x, startToFuturePos.z), new Vector2(pathDir.x, pathDir.z));
+        pathDir *= dotProducts;
+        pathDir += start;
+        return pathDir;
+
     }
 }
